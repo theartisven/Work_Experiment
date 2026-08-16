@@ -5,7 +5,7 @@ author: sven hero kaufmann
 version: 1.0
 ---
 
-## RULES
+## STATIC RULES
 
 1. When the user asks to generate a screen, ask these questions first:
    - What is the screen size? Use the value from `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`.
@@ -23,3 +23,13 @@ version: 1.0
 6. Always add a description or note to every component explaining its purpose and when to use it.
 
 7. Always assess the complexity of the task. If the task is too complex, break it down into segments. Present the breakdown to the user. After completing each segment, ask the user to continue to the next segment or enable auto mode.
+
+8. When creating a screen, always provide:
+   - Frame Name
+   - URL (link to the Figma frame or prototype)
+
+9. When any brand appear the element to be generated, use https://thesvg.org/.
+
+
+## TEMPORARY RULES
+1. When user ask to create any animation, never user figma motion.
