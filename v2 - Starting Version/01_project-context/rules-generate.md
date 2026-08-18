@@ -11,48 +11,78 @@ version: 1.6
 - `01_project-context/project-settings.md` — This file stores project variables, like the repeat value. Use it to check the current settings.
 
 ---
+# ALWAYS
 
-## AlWAYS
+## Before You Start
 
-**Before generating any screen, ask:**
-- What is the screen size? Use `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`.
-- Light mode or dark mode?
+**Ask the user upfront:**
+- Screen size: `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`?
+- Light or dark mode?
 - Wireframe or mockup?
 
-**Before creating any screen or element, check your project's DESIGN_LIBRARIES.**
-- If all components exist, proceed.
-- If any are missing, generate two versions based on how existing components look, then have the user choose.
+**Check your DESIGN_LIBRARIES first.**
+- All components exist? Proceed.
+- Missing components? Generate two versions based on existing patterns, then let the user pick.
 
-**Always create the most common design pattern**
+---
 
-**When generating interactable elements**
-Also generate empty states, error handling, or anything that can support when something breaks.
+## Layout & Spacing
 
-**Always use Auto Layout when creating or editing screens and elements.**
+**Use Auto Layout** on every screen and element you create or edit.
 
-**Use only multiples of 8 for spacing and padding (8, 16, 24, 32).** No odd or random values.
+**Spacing & padding:** Only multiples of 8. (8, 16, 24, 32—no odd numbers.)
 
-**Apply a grid or column layout to every screen frame before placing content.**
+**Grid or column layout** on every screen frame before placing content.
 
-**Add a description to every component** explaining its purpose and when to use it.
+**X and Y positions:** Whole numbers only.
 
-**Assess task complexity first.** If complex, break it into segments and present the breakdown. After each segment, ask the user to continue or enable auto mode.
+**Text layers:** Never fix width/height. Use Hug or Fill only.
 
-**Name layers using semantic naming, following BEM conventions as reference.**
+---
 
+## Patterns & Generation
 
-**After creating a screen, always provide:**
-- `{Frame Name}`
-- `https://www.figma.com/design/{fileKey}?node-id={nodeId-with-dashes}`
+**Always create the most common design pattern** for the task.
 
-> To build the URL: take `fileKey` from the current working file. Take `nodeId` from the MCP response (e.g. `123:456`). Replace `:` with `-` → `123-456`.
+**Images & video:** Always use fit.
 
-**When a brand logo or icon appears in an element,** fetch it from `https://thesvg.org/`.
+**Interactable elements:** Include empty states, error handling, and failure cases.
 
-**All x and y positions for frames and elements must be whole numbers only.**
+---
 
-**For text layers, never set a fixed width or height** — use Hug or Fill only.
+## Naming & Documentation
 
+**Layer names:** Semantic naming, using BEM as reference.
+
+**Component descriptions:** Add one to every component explaining its purpose and when to use it.
+
+---
+
+## Complex Work
+
+**Assess task complexity first.** If complex, break it into segments and show the breakdown. After each, ask the user to continue or enable auto mode.
+
+---
+
+## External Assets
+
+**Brand logos or icons:** Fetch from `https://thesvg.org/`.
+
+---
+
+## After Every Screen (Create or Edit)
+
+**Frame Name:** `{exactly-as-it-appears-in-layers}`
+
+**Figma Link:** `https://www.figma.com/design/{fileKey}?node-id={nodeId-converted}`
+
+**Building the link:**
+- `fileKey` from your current file URL
+- `nodeId` from MCP response (e.g., `123:456`)
+- Replace `:` with `-` → `123-456`
+- Format as markdown so it's clickable
+
+**For components or nested groups** (no top-level frame): Link to the node directly, not a parent.
 
 ---
 

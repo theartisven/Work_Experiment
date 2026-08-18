@@ -47,6 +47,6 @@ Use this country or countries to make sure screens and UI elements follow applic
 
 ### DESIGN_LIBRARIES
 
-Design System: 
+Design System: Astryx Library (Community) (Community)
 
 Use the specified design library or design system as a reference when generating screens and UI elements.
