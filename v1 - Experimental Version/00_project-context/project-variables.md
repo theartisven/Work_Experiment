@@ -1,5 +1,5 @@
 ---
-name: project-variables
+name: project-settingss
 description: Defines project-wide variables for Figma UI generation, including the reference Figma design system and component library, standard desktop, tablet, and mobile screen widths, and country as the regional context for legal and UI considerations. These variables are used together with general-rules.md when generating screens and UI elements.
 ---
 

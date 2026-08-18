@@ -1,7 +1,7 @@
 ---
 name: init-file
 
-description: Defines the project initialization workflow for creating project-variables.md, including checking for existing variables, collecting missing project configuration values one at a time, handling multi-country compliance modes, selecting design libraries, and confirming the collected configuration before creating the project variables file.
+description: Defines the project initialization workflow for creating project-settingss.md, including checking for existing variables, collecting missing project configuration values one at a time, handling multi-country compliance modes, selecting design libraries, and confirming the collected configuration before creating the project variables file.
 original-author: sven hero kaufmann
 contributor:
    - theodore galve
@@ -9,7 +9,7 @@ version: 2.0
 ---
 ## When to Start a Chat
 
-1. Create `00_project-context/project-variables.md`.
+1. Create `01_project-context/project-settings.md`.
 2. The AI uses this file for general project context.
 3. Check if this file exists:
 
@@ -154,16 +154,16 @@ Do not use example values, default values, or placeholder values in the confirma
 
 Ask the user to confirm whether the collected configuration is complete and correct.
 
-- **If confirmed:** Create `00_project-context/project-variables.md`.
+- **If confirmed:** Create `01_project-context/project-settingss.md`.
 - **If corrections are requested:** Update only the affected values, then show the updated confirmation table and ask for confirmation again.
 - **If variables are still missing:** Ask only for the missing variables before showing the confirmation table again.
 
-Use `02_other files/template/project-variable.md` as the reference template when creating the file.
+Use `02_other files/template/project-settings.md` as the reference template when creating the file.
 
-The generated `00_project-context/project-variables.md` file must use this exact front matter:
+The generated `01_project-context/project-settingss.md` file must use this exact front matter:
 
 ---
-name: project-variables
+name: project-settingss
 description: Defines project-wide variables for Figma UI generation, including the reference Figma design system and component library, standard desktop, tablet, and mobile screen widths, and South Korea as the regional context for legal and UI considerations. These variables are used together with general-rules.md when generating screens and UI elements.
 ---
 
@@ -182,6 +182,9 @@ The content after the front matter must follow the established variable format:
 9. If additional variables are introduced in future steps, add them as new `### VARIABLE_NAME` sections using the same format.
 10. Additional variables must be added without changing the established front matter or the format of existing variables.
 
-## Other Files
+## FILES and DEFINITION
 
-- `general-rules.md` — The AI reads this file to know how to act.
+- `01_project-context/project-settings.md` — This file stores project variables, like the repeat value. Use it to check the current settings.
+- `01_project-context/rules-generate.md` — This file holds generation rules. Use it to know what approach to take when the AI creates content.
+- `01_project-context/rules-thinking.md` — This file holds thinking rules. Use it to know how the AI should reason and decide.
+- `01_project-context/rules-skill.md` — This file holds thinking rules. Use it to know how the AI should skills.
