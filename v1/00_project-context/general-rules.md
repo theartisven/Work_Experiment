@@ -1,24 +1,35 @@
 ---
 name: general-rules
-description:
-author: sven hero kaufmann
+description: Defines persistent Figma design-generation rules for creating and editing screens, including screen setup, page selection, component and style reuse, Auto Layout, 8-point spacing, grid structure, component documentation, whole-number positioning, responsive text sizing, brand asset handling, task segmentation, and required output details. Also specifies that Figma Motion must not be used for animation tasks.
+original-author: sven hero kaufmann
+contributor:
+   - theodore galve
 version: 1.6
 ---
 
-## STATIC RULES
+## PERMANENT RULES
 
 1. When the user asks to generate a screen, ask these questions first:
-   - What is the screen size? Use the value from `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`.
-   - Light mode or dark mode?
-   - Wireframe or mockup?
-   - Which page?
+
+   * What is the screen size? Use the value from `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`.
+   * Light mode or dark mode?
+   * Wireframe or mockup?
+   * Which page?
+
+Desktop - 1440
+Lightmode
+mockup
+
 
 **For page selection:**
-- Check if the page exists in the Figma file.
-- If page does not exist, find the nearest match by name or purpose.
-- If no match found, create a new page with the requested name.
-- Do not create a page unless necessary.
-2. Always check if a component or style exists in the file before creating a new one.
+
+* Check `pages.md` first to determine whether the requested page exists.
+* If the page does not exist, find the nearest match by name or purpose.
+* If no match is found, create a new page with the requested name.
+* Do not create a page unless necessary.
+
+2. Always check if a component or style already exists in the file before creating a new one.
+
 
 3. When creating/editing a new screen or element, always use Auto Layout. Align element to most common design pattern
 

@@ -1,5 +1,5 @@
 ---
-name: word
+name: rewriter
 description: Analyze and rewrite text on Figma layers. Trigger on "/word", "/word help", "/word jargon", "/word font", "/word spelling", "/word seo", "/word cro", "/word cta", "/word story", "/word version", "/word tone", "/word shorter", "/word longer", "/word [number]" (e.g. "/word 12" or "/word shorter 10"), "/word consistency", "/word placeholder", or "/word [language]" (e.g. "/word spanish"). Use whenever the user wants to audit Figma copy for jargon, grammar/spelling, or font properties (family/weight/size), get SEO/CRO/CTA/storytelling/tone rewrite suggestions (individually or combined via /word version), rewrite copy to a target word count, tighten or expand copy for length, flag inconsistent terminology, replace placeholder/lorem-ipsum text, or translate selected Figma text layers. Requires a connected Figma MCP/plugin tool that can read text layer content from the current selection — if none connected, say so and stop (except when explaining what /word does).
 ---
 
