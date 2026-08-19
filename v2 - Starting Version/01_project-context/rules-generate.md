@@ -10,82 +10,124 @@ version: 1.6
 - `01_project-context/rules-thinking.md` — Thinking and reasoning rules for the AI.
 - `01_project-context/project-settings.md` — This file stores project variables, like the repeat value. Use it to check the current settings.
 
----
+---```markdown
 # ALWAYS
 
 ## Before You Start
 
-**Ask the user upfront:**
+**Ask the user before starting:**
 - Screen size: `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`?
-- Light or dark mode?
-- Wireframe or mockup?
+- Theme: Light or dark mode?
+- Design fidelity: Wireframe, LO-FI Mockup, or HI-FI Mockup?
 
-**Check your DESIGN_LIBRARIES first.**
-- All components exist? Proceed.
-- Missing components? Generate two versions based on existing patterns, then let the user pick.
-
----
-
-## Layout & Spacing
-
-**Use Auto Layout** on every screen and element you create or edit.
-
-**Spacing & padding:** Only multiples of 8. (8, 16, 24, 32—no odd numbers.)
-
-**Grid or column layout** on every screen frame before placing content.
-
-**X and Y positions:** Whole numbers only.
-
-**Text layers:** Never fix width/height. Use Hug or Fill only.
+**Check `DESIGN_LIBRARIES` first:**
+- If all required components exist, proceed.
+- If components are missing, create two versions based on existing design patterns. Ask the user to select one version before continuing.
 
 ---
 
-## Patterns & Generation
+## Layout and Spacing
 
-**Always create the most common design pattern** for the task.
+**Use Auto Layout:**
+- Apply Auto Layout to every screen and element that you create or edit.
 
-**Images & video:** Always use fit.
+**Forms:**
+- Generate related or grouped fields with the same visual appearance.
+- Avoid generic field labels.
 
-**Interactable elements:** Include empty states, error handling, and failure cases.
+**Components:**
+- After using a component, check that it works correctly.
+- If a component is broken, reset it before continuing.
+
+**Spacing and padding:**
+- Use multiples of 8 only.
+- Allowed values include 8, 16, 24, and 32.
+- Do not use other values.
+
+**Grid and columns:**
+- Add a grid or column layout to every screen frame before adding content.
+
+**Positioning:**
+- Use whole numbers for all X and Y positions.
+
+**Text layers:**
+- Do not set fixed width or height.
+- Use `Hug` or `Fill` instead.
 
 ---
 
-## Naming & Documentation
+## Patterns and Generation
 
-**Layer names:** Semantic naming, using BEM as reference.
+**Design patterns:**
+- Always use the most common design pattern for the requested task.
 
-**Component descriptions:** Add one to every component explaining its purpose and when to use it.
+**Images and video:**
+- Always use `Fit`.
 
----
-
-## Complex Work
-
-**Assess task complexity first.** If complex, break it into segments and show the breakdown. After each, ask the user to continue or enable auto mode.
-
----
-
-## External Assets
-
-**Brand logos or icons:** Fetch from `https://thesvg.org/`.
+**Interactive elements:**
+- Include the following states when applicable:
+  - Empty state
+  - Error state
+  - Failure state
 
 ---
 
-## After Every Screen (Create or Edit)
+## Naming and Documentation
 
-**Frame Name:** `{exactly-as-it-appears-in-layers}`
+**Layer names:**
+- Use semantic names.
+- Use BEM naming as a reference.
+- No "-" or "_"
 
-**Figma Link:** `https://www.figma.com/design/{fileKey}?node-id={nodeId-converted}`
+**Component descriptions:**
+- Add a description to every component.
+- Explain:
+  - The purpose of the component.
+  - When to use the component.
 
-**Building the link:**
-- `fileKey` from your current file URL
-- `nodeId` from MCP response (e.g., `123:456`)
-- Replace `:` with `-` → `123-456`
-- Format as markdown so it's clickable
+---
 
-**For components or nested groups** (no top-level frame): Link to the node directly, not a parent.
+## Complex Tasks
+
+**Assess complexity before starting:**
+- If the task is simple, proceed directly.
+- If the task is complex:
+  1. Divide the task into smaller segments.
+  2. Show the task breakdown.
+  3. Complete one segment at a time.
+  4. After each segment, ask the user whether to continue or enable auto mode.
+
+---
+
+## After Every Screen
+
+Apply these requirements after creating or editing each screen.
+
+**Frame name:**
+- Use the exact name shown in the Figma Layers panel:
+  `{exactly-as-it-appears-in-layers}`
+
+**Figma link:**
+- Provide a clickable link using this format:
+  `https://www.figma.com/design/{fileKey}?node-id={nodeId-converted}`
+
+**Build the Figma link:**
+1. Get `fileKey` from the current Figma file URL.
+2. Get `nodeId` from the MCP response.
+3. Example node ID: `123:456`
+4. Replace `:` with `-`.
+5. Example converted node ID: `123-456`.
+6. Use the converted node ID in the Figma URL.
+7. Format the URL as a clickable Markdown link.
+
+**Components and nested groups:**
+- If there is no top-level frame, link directly to the component or nested group node.
+- Do not link to a parent frame.
 
 ---
 
 ## USE FOR NOW
 
-**When the user asks to create any animation, do not use Figma Motion.**
+**Animation:**
+- Do not use Figma Motion when the user asks to create an animation.
+```
