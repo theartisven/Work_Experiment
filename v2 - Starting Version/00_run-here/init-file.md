@@ -1,7 +1,6 @@
 ---
 name: init-file
-
-description: Defines the project initialization workflow for creating project-settingss.md, including checking for existing variables, collecting missing project configuration values one at a time, handling multi-country compliance modes, selecting design libraries, and confirming the collected configuration before creating the project variables file.
+description: Start the project initialization workflow. This skill creates project-settings.md. It checks for existing variables. It collects missing configuration values one at a time. It handles compliance rules for multiple countries. It lets you select design libraries. It confirms all settings before creating the project variables file.
 original-author: sven hero kaufmann
 contributor:
    - theodore galve

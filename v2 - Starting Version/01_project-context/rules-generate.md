@@ -1,54 +1,70 @@
 ---
 name: rules-generate
-description:
+description: Generate Figma designs from project rules. This skill auto-starts when you ask to generate. It applies Auto Layout, enforces 8pt spacing grids, uses semantic naming, and generates design patterns. It checks design libraries first. It asks for screen size, theme, and fidelity level. It handles complex tasks by breaking them into segments. It provides Figma links after each screen.
 original-author: sven hero kaufmann
 contributor:
-   - theodore galve
-version: 1.6
+  - theodore galve
+version: 1.7
 ---
-### OTHER FILES TO USE WHEN GENERATING
-- `01_project-context/rules-thinking.md` — Thinking and reasoning rules for the AI.
-- `01_project-context/project-settings.md` — This file stores project variables, like the repeat value. Use it to check the current settings.
 
----```markdown
-# ALWAYS
+### Other Files to Reference When Generating
+
+- `01_project-context/rules-thinking.md` — Thinking and reasoning rules for the AI.
+- `01_project-context/project-settings.md` — Project variables (e.g. repeat value). Check current settings before generating.
+
+---
 
 ## Before You Start
 
-**Ask the user before starting:**
-- Screen size: `DESKTOP_RULE`, `TABLET_RULE`, or `MOBILE_RULE`?
-- Theme: Light or dark mode?
-- Design fidelity: Wireframe, LO-FI Mockup, or HI-FI Mockup?
+### Step 1: Gather Requirements
 
-**Check `DESIGN_LIBRARIES` first:**
-- If all required components exist, proceed.
-- If components are missing, create two versions based on existing design patterns. Ask the user to select one version before continuing.
+Ask the user for:
+
+- **Screen size**: Desktop · Tablet · Mobile
+- **Theme**: Light Mode · Dark Mode
+- **Fidelity**: Wireframe · Low Fi Mockup · High Fi Mockup
+
+### Step 2: Interview & Clarify
+
+- Conduct targeted questions until you reach shared understanding.
+- Work in **rounds**: identify all decisions whose prerequisites are met (the "frontier"). 3–5 rounds total.
+- Ask all frontier questions in one round using this format:
+
+```
+❓ **Q1** — **<question title>**: <question body, including multiple choices if needed>
+
+➡️ <your recommended answer>
+```
+
+- Research facts yourself — don't ask the user to find them.
+- Before designing, summarize the content in bullet points.
+- Get user approval before generating UI.
+
+### Step 3: Check Design Libraries
+
+- Ask if using a design library or from scratch
 
 ---
 
+# 
 ## Layout and Spacing
 
-**Use Auto Layout:**
-- Apply Auto Layout to every screen and element that you create or edit.
+**Auto Layout:**
+- Apply Auto Layout to every screen and element you create or edit.
 
 **Forms:**
-- Generate related or grouped fields with the same visual appearance.
+- Group related fields with consistent visual appearance.
 - Avoid generic field labels.
 
 **Components:**
-- After using a component, check that it works correctly.
+- After using a component, verify it works correctly.
 - If a component is broken, reset it before continuing.
 
 **Spacing and padding:**
 - Use multiples of 8 only.
-- Allowed values include 8, 16, 24, and 32.
-- Do not use other values.
 
-**Grid and columns:**
-- Add a grid or column layout to every screen frame before adding content.
-
-**Positioning:**
-- Use whole numbers for all X and Y positions.
+**Number:**
+- For any property like x position or width, only use whole number
 
 **Text layers:**
 - Do not set fixed width or height.
@@ -64,11 +80,6 @@ version: 1.6
 **Images and video:**
 - Always use `Fit`.
 
-**Interactive elements:**
-- Include the following states when applicable:
-  - Empty state
-  - Error state
-  - Failure state
 
 ---
 
@@ -77,57 +88,69 @@ version: 1.6
 **Layer names:**
 - Use semantic names.
 - Use BEM naming as a reference.
-- No "-" or "_"
-
-**Component descriptions:**
-- Add a description to every component.
-- Explain:
-  - The purpose of the component.
-  - When to use the component.
+- No `-` or `_` in block names.
 
 ---
 
-## Complex Tasks
+## Anti-AI Design Rules
 
-**Assess complexity before starting:**
-- If the task is simple, proceed directly.
-- If the task is complex:
-  1. Divide the task into smaller segments.
-  2. Show the task breakdown.
-  3. Complete one segment at a time.
-  4. After each segment, ask the user whether to continue or enable auto mode.
+Avoid defaulting to generic AI-generated design patterns. Specifically:
+
+### Layout & Composition
+- No centered hero sections with headline + subtext + two side-by-side buttons unless the content genuinely calls for it.
+- No symmetric 3-column grids used regardless of actual content count.
+- No decorative lines or bars placed under headings.
+- No mechanically even spacing everywhere — vary density based on content importance.
+
+
+### Color & Effects
+- No purple-to-blue gradient backgrounds or decorative blurred gradient blobs.
+- No overly saturated violet/indigo as a default accent color.
+- No rainbow or multi-color gradients on buttons or icons.
+- No soft drop shadows applied to everything — use shadow sparingly and with clear purpose.
+- No glassmorphism or frosted-blur effects used decoratively without functional reason.
+
+
+### Typography
+
+- No defaulting to Inter, Poppins, or Manrope — use only the brand's actual typeface.
+- No oversized bold headlines with unnecessarily tight letter spacing on every screen.
+- No identical font weight and size hierarchy across every screen regardless of content.
+
+
+### Shape & Components
+
+- No uniform rounded corners on every card, button, and input — mix sharp and rounded intentionally.
+- No identical cards regardless of content — vary size and layout based on what they hold.
+- No overuse of pill-shaped badges or tags.
+- No emoji used as functional icons.
+- No icons uniformly placed inside matching colored circles, evenly spaced.
+
+
+### Imagery & Illustration
+
+- No flat "corporate memphis"-style illustrated people.
+- No generic abstract 3D blobs or shapes as filler decoration.
+
+**Instead:** Use real photography, purposeful illustration, or leave the space empty. Negative space is better than decorative filler.
+
+### Content & Copy
+
+- No lorem ipsum or vague placeholder text — use real or realistic content.
+- No generic CTAs ("Get Started," "Learn More," "Sign Up Now") — write CTAs that reflect the brand's voice and the specific action.
+- No placeholder names like "John Doe," "Product Name," "Company Inc." — use real-sounding, contextually appropriate names.
+
+**Instead:** Write copy that sounds like the brand actually talking. Match the domain's tone — a law firm, a café, and a streetwear label should not all sound the same.
 
 ---
 
 ## After Every Screen
 
-Apply these requirements after creating or editing each screen.
-
-**Frame name:**
-- Use the exact name shown in the Figma Layers panel:
-  `{exactly-as-it-appears-in-layers}`
-
-**Figma link:**
-- Provide a clickable link using this format:
-  `https://www.figma.com/design/{fileKey}?node-id={nodeId-converted}`
-
-**Build the Figma link:**
-1. Get `fileKey` from the current Figma file URL.
-2. Get `nodeId` from the MCP response.
-3. Example node ID: `123:456`
-4. Replace `:` with `-`.
-5. Example converted node ID: `123-456`.
-6. Use the converted node ID in the Figma URL.
-7. Format the URL as a clickable Markdown link.
-
-**Components and nested groups:**
-- If there is no top-level frame, link directly to the component or nested group node.
-- Do not link to a parent frame.
+- Use the exact name shown in the Figma Layers panel for the frame name: `{exactly-as-it-appears-in-layers}`
+- Provide a Figma link after each screen is created.
 
 ---
 
-## USE FOR NOW
+## Animation
 
-**Animation:**
 - Do not use Figma Motion when the user asks to create an animation.
-```

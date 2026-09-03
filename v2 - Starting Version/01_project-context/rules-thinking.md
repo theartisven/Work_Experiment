@@ -1,6 +1,6 @@
 ---
 name: rules-thinking
-description: Defines project-wide 
+description: Auto-apply thinking rules before designing. Ask about unclear items and surface tradeoffs. State assumptions out loud. Show options instead of picking one. Design only what solves the problem. Touch only what needs to change. Turn requests into testable outcomes. Verify changes before moving forward.
 original-author: sven hero kaufmann
 contributor:
 version: 
