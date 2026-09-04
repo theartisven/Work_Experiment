@@ -6,10 +6,10 @@ This repository is a collection of reusable skills and instructions for AI codin
 
 | File/Directory | Purpose |
 |---|---|
-| `files_made/INSTRUCTION.md` | Global work guidelines |
-| `files_made/MEMORY.md` | Global project memory and context |
-| `files_made/GENERATE.md | Use when user ask to generate a screen |
-| `files_made/PROJECT-SETTTING.md | Global storage of reusable variable |
+| `00_premade/INSTRUCTION.md` | Global work guidelines |
+| `00_premade/MEMORY.md` | Global project memory and context |
+| `00_premade/GENERATE.md | Use when user ask to generate a screen |
+| `00_premade/PROJECT-SETTTING.md | Global storage of reusable variable |
 | `.agents/skills/` | Container directory for all individual skills |
 
 
