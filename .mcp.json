@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "figma-mcp": {
+      "url": "http://127.0.0.1:3845/mcp",
+      "type": "http"
+    },
+    "figma-console": {
+      "command": "npx",
+      "args": ["-y", "figma-console-mcp@latest"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "${env-local:FIGMA_TOKEN}",
+        "ENABLE_MCP_APPS": "true"
+      }
+    }
+  }
+}
