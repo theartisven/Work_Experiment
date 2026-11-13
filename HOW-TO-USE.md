@@ -24,8 +24,8 @@ Install these tools before you begin:
 ---
 ## Setup
 >Note:
->mcp.json is Global
->.mcp.json is Local < What we are using
+> - mcp.json is Global
+> - .mcp.json is Local < What we are using
 
 ### Part 1 — Figma MCP
 
