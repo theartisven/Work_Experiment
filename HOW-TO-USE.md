@@ -10,8 +10,22 @@ Install these tools before you begin:
   > NOTE: A free account works. Some features are not available on the free plan.
 
 ---
+## To Do List
 
+> 🔧 Fix · ➕ Add · 🧪 Experiment
+
+| | Category | Item |
+|---|---|---|
+| 🔧 | To Fix | Memory skill |
+| ➕ | To Add | Adding persona |
+| ➕ | To Add | Adding figma skills |
+| 🧪 | To Experiment | Adding other MCP |
+
+---
 ## Setup
+>Note:
+>mcp.json is Global
+>.mcp.json is Local < What we are using
 
 ### Part 1 — Figma MCP
 
