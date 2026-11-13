@@ -32,7 +32,7 @@ Install these tools before you begin:
 - Open `.mcp.json`.
 - Find the `url` field.
 - Set the correct address:
-  - Local (VS Code + Co): `http://127.0.0.1:3845/mcp`
+  - Local (VS Code + Co-Pilot): `http://127.0.0.1:3845/mcp`
   - Remote MCP (pilot): `https://mcp.figma.com/mcp`
 - Click Start above the `figma-mcp` property.
 
@@ -42,12 +42,9 @@ Install these tools before you begin:
 
 **A — Create a Personal Access Token**
 
-- Open Figma.
-- Go to User Settings. Go to Security.
-- Find the Personal Access Tokens section.
-- Click Create.
-- Enter a name. Example: `Figma-Console`.
-- Set an expiration time.
+- Open Figma (Any) > User Settings > Security.
+- Find the Personal Access Tokens section and click Create.
+- Enter a name (Any) and set an expiration time.
 - Select your scopes.
   > NOTE: If you are not sure, select all checkboxes in User, Files, and Design Systems.
 - Click Generate.
