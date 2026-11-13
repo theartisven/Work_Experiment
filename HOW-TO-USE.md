@@ -75,11 +75,12 @@ Install these tools before you begin:
 
 **A — Project Settings**
 
-- Go to `.agents/structure/project-settings/SKILL.md`.
+- Go to `.agents` folder
+- Go to `structure/project-settings/SKILL.md`.
 - Find `FIGMA_URL:`.
 - Add the project Figma URL.
 
 **B — Read Agents.md**
 
-- Open `AGENTS.md`.
+- Open `AGENTS.md` markdown.
 - Read it for a short overview of the files included.
