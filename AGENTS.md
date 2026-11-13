@@ -20,7 +20,7 @@ This folder contains guides that help AI tools, such as GitHub Copilot, do diffe
 |---|---|---|---|
 | `.agents` | Agent | Limited | Holds agent guides, skills, and supporting files. |
 | `.others` | User | None | Holds the user's private notes. |
-| `_archive` | User | None | Stores unwanted files. |
+| `_needed` | User | None | File needed to use |
 
 ### Agent Folder Guides
 

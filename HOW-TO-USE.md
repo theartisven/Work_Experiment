@@ -17,6 +17,7 @@ Install these tools before you begin:
 | | Category | Item |
 |---|---|---|
 | 🔧 | To Fix | Memory skill |
+| 🔧 | To Fix | MCP connection error |
 | ➕ | To Add | Adding persona |
 | ➕ | To Add | Adding figma skills |
 | 🧪 | To Experiment | Adding other MCP |
@@ -41,8 +42,10 @@ Install these tools before you begin:
 ### Part 2 — Figma Console
 
 **A — Create a Personal Access Token**
+- Duplicate `.env-sample`.
+- Rename the duplicate file to `.env`.
 
-- Open Figma (Any) > User Settings > Security.
+- Open Figma (Any) > Settings > Security.
 - Find the Personal Access Tokens section and click Create.
 - Enter a name (Any) and set an expiration time.
 - Select your scopes.
@@ -50,24 +53,20 @@ Install these tools before you begin:
 - Click Generate.
 - Copy the token.
 
-**B — Add the token to your project**
+- in `.env`, replace `your_figma_token_here`  with the token.
 
-- Duplicate `.env-sample`.
-- Rename the duplicate to `.env`.
-- Replace `your_figma_token_here` with the token.
-
-**C — Connect Figma Desktop**
+**B — Connect Figma Desktop**
 
 - Open Figma Desktop.
 - Open the file you are working on.
 - Go to Figma Logo > Plugin > Development > Import plugin from manifest.
 - Select `manifest.json` in `_needed/figma-desktop-bridge`.
-- Select Figma Desktop Bridge in plugins.
+- Select `Figma Desktop Bridge` in plugins.
 - Click Connect.
 
-**D — Enable in MCP config**
+**C — Enable in MCP config**
 
-- Open `.mcp.json`.
+- Go to `.vscode/mcp.json`.
 - Click Start above the `figma-console` property.
 
 ---

@@ -20,6 +20,7 @@ Use this Figma file as  UI generation tasks.
 
 ### DESKTOP_RULE
 DESKTOP_RULE: 1440
+
 ---
 
 ### TABLET_RULE
