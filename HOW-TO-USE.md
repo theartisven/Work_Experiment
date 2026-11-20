@@ -3,11 +3,14 @@ _Last Update: 2026-11-13 version 3_
 
 Install these tools before you begin:
 
-- Install Visual Studio Code.
-- Install the Figma Extension in VS Code.
-- Install Figma Desktop.
-- (Optional) Get a Pro Figma Account.
-  > NOTE: A free account works. Some features are not available on the free plan.
+- Visual Studio Code.
+- Visual Studio Extension.
+  - Figma
+  - Figma MCP Server
+- Figma Desktop.
+- Node JS
+  > (Optional) Get a Pro Figma Account.
+  > A free account works. Some features are not available on the free plan.
 
 ---
 ## To Do List
@@ -17,7 +20,6 @@ Install these tools before you begin:
 | | Category | Item |
 |---|---|---|
 | 🔧 | To Fix | Memory skill |
-| 🔧 | To Fix | MCP connection error |
 | ➕ | To Add | Adding persona |
 | ➕ | To Add | Adding figma skills |
 | 🧪 | To Experiment | Adding other MCP |
@@ -45,7 +47,7 @@ Install these tools before you begin:
 - Duplicate `.env-sample`.
 - Rename the duplicate file to `.env`.
 
-- Open Figma (Any) > Settings > Security.
+- Open Figma Home (Any) > Account > Settings > Security.
 - Find the Personal Access Tokens section and click Create.
 - Enter a name (Any) and set an expiration time.
 - Select your scopes.
@@ -60,7 +62,7 @@ Install these tools before you begin:
 - Open Figma Desktop.
 - Open the file you are working on.
 - Go to Figma Logo > Plugin > Development > Import plugin from manifest.
-- Select `manifest.json` in `_needed/figma-desktop-bridge`.
+- Select `manifest.json` in `resources/figma-desktop-bridge`.
 - Select `Figma Desktop Bridge` in plugins.
 - Click Connect.
 

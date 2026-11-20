@@ -20,13 +20,13 @@ This folder contains guides that help AI tools, such as GitHub Copilot, do diffe
 |---|---|---|---|
 | `.agents` | Agent | Limited | Holds agent guides, skills, and supporting files. |
 | `.others` | User | None | Holds the user's private notes. |
-| `_needed` | User | None | File needed to use |
+| `resources` | User | None | File needed to use |
+| `ai-created` | Agent | RW | The agent puts the files it makes here. |
 
 ### Agent Folder Guides
 
 | Name | User | Access | Purpose |
 |---|---|---|---|
-| `.agents/created/` | Agent | RW | The agent puts the files it makes here. |
 | `.agents/persona/` | Agent | RO | When the user asks the agent to pretend to be someone else, the agent can use these files to get references. |
 | `.agents/references/` | Agent | RO | Reference guides for tools and workflows. |
 | `.agents/skills/` | Agent | RO | When the user asks for a specific task, the agent can use these files to get references. |
@@ -37,7 +37,6 @@ This folder contains guides that help AI tools, such as GitHub Copilot, do diffe
 | Name | Agent | Access | Purpose | Scope |
 |---|---|---|---|---|
 | `mcp/FIGMA.MD` | Agent | RO | Explains Console-first tool selection and MCP fallbacks. | Figma |
-| `user-interface/` | Agent | RO | Guidelines references for interface design. | User interface |
 
 ### Structure Guides
 

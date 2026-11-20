@@ -7,17 +7,6 @@ contributor:
 version: 1.7
 ---
 
-## Project Variables
-
-
-### FIGMA_URL
-FIGMA_URL:
-
-**Description**
-Use this Figma file as  UI generation tasks.
-
----
-
 ### DESKTOP_RULE
 DESKTOP_RULE: 1440
 

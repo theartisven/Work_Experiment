@@ -1,0 +1,380 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Before & After</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    /* neutral-stone palette + indigo accent; two-col import bar + centered comparison */
+    --bg:        #f4f3f0;
+    --fg:        #1a1917;
+    --fg-muted:  #7a7971;
+    --surface:   #ffffff;
+    --border:    rgba(0,0,0,0.11);
+    --accent:    #3b5bdb;
+    --accent-soft: rgba(59,91,219,0.12);
+    --divider:   rgba(255,255,255,0.95);
+    --hbg:       #ffffff;
+    --hfg:       #55554e;
+    --lbg:       rgba(10,10,8,0.52);
+    --shadow:    0 1px 2px rgba(0,0,0,0.06), 0 4px 18px rgba(0,0,0,0.07);
+    --r:         14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #111110;
+      --fg:        #f0ede6;
+      --fg-muted:  #89887e;
+      --surface:   #1c1b19;
+      --border:    rgba(255,255,255,0.09);
+      --accent:    #5c7cfa;
+      --accent-soft: rgba(92,124,250,0.14);
+      --hbg:       #2a2927;
+      --hfg:       #9e9d94;
+      --shadow:    0 1px 2px rgba(0,0,0,0.3), 0 4px 18px rgba(0,0,0,0.25);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #111110;
+    --fg:        #f0ede6;
+    --fg-muted:  #89887e;
+    --surface:   #1c1b19;
+    --border:    rgba(255,255,255,0.09);
+    --accent:    #5c7cfa;
+    --accent-soft: rgba(92,124,250,0.14);
+    --hbg:       #2a2927;
+    --hfg:       #9e9d94;
+    --shadow:    0 1px 2px rgba(0,0,0,0.3), 0 4px 18px rgba(0,0,0,0.25);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding-block: 44px 56px;
+    padding-left:  max(16px, env(safe-area-inset-left,  0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    gap: 22px;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; }
+
+  h1 {
+    font-size: clamp(1.3rem, 3vw, 1.65rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .sub {
+    margin-top: 6px;
+    font-size: 0.875rem;
+    color: var(--fg-muted);
+  }
+
+  /* ── Import cards ── */
+  .imports {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 780px;
+  }
+
+  .icard {
+    flex: 1;
+    min-width: 0;
+    background: var(--surface);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--r);
+    padding: 20px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    position: relative;
+    transition: border-color .18s, background .18s;
+    box-shadow: var(--shadow);
+  }
+
+  .icard:hover         { border-color: var(--accent); border-style: solid; }
+  .icard.loaded        { border-style: solid; border-color: var(--accent); }
+
+  .icard input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .pill {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 100px;
+    background: var(--border);
+    color: var(--fg-muted);
+    transition: background .18s, color .18s;
+  }
+
+  .icard.loaded .pill { background: var(--accent-soft); color: var(--accent); }
+
+  .uicon { width: 30px; height: 30px; color: var(--fg-muted); transition: color .18s; }
+  .icard.loaded .uicon { color: var(--accent); }
+
+  .fname {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    transition: color .18s;
+  }
+
+  .icard.loaded .fname { color: var(--fg); }
+
+  /* ── Comparison ── */
+  .wrap { width: 100%; max-width: 920px; }
+
+  .stage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--surface);
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    cursor: ew-resize;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* empty hint */
+  .empty {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px; pointer-events: none;
+  }
+  .empty svg { width: 52px; height: 52px; color: var(--border); }
+  .empty p   { font-size: 0.875rem; color: var(--fg-muted); }
+
+  /* images */
+  .img-b, .img-a {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .img-b  { z-index: 1; }
+
+  .clip {
+    position: absolute; inset: 0; z-index: 2;
+    will-change: clip-path;
+  }
+  .img-a { position: absolute; inset: 0; }
+
+  /* divider */
+  .line {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: var(--divider);
+    z-index: 3; pointer-events: none;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(0,0,0,0.22);
+  }
+
+  /* handle */
+  .knob {
+    position: absolute; top: 50%;
+    width: 46px; height: 46px; z-index: 4;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    background: var(--hbg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(0,0,0,0.07);
+  }
+  .knob svg { width: 22px; height: 22px; color: var(--hfg); }
+
+  /* labels */
+  .badge {
+    position: absolute; top: 14px; z-index: 5;
+    padding: 3px 9px;
+    background: var(--lbg);
+    color: rgba(255,255,255,0.93);
+    font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    border-radius: 6px; pointer-events: none;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .badge-b { left: 14px; }
+  .badge-a { right: 14px; }
+
+  .hint {
+    margin-top: 11px;
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    text-align: center;
+  }
+
+  [hidden] { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="header">
+  <h1>Before &amp; After</h1>
+  <p class="sub">Import two images, then drag to compare</p>
+</div>
+
+<div class="imports">
+
+  <label class="icard" id="card-b">
+    <input type="file" id="in-b" accept="image/*">
+    <span class="pill">Before</span>
+    <svg class="uicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/>
+    </svg>
+    <span class="fname" id="nm-b">Choose image…</span>
+  </label>
+
+  <label class="icard" id="card-a">
+    <input type="file" id="in-a" accept="image/*">
+    <span class="pill">After</span>
+    <svg class="uicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/>
+    </svg>
+    <span class="fname" id="nm-a">Choose image…</span>
+  </label>
+
+</div>
+
+<div class="wrap">
+  <div class="stage" id="stage">
+
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+      <p>Import both images above to begin</p>
+    </div>
+
+    <img id="img-b" class="img-b" src="" alt="Before" hidden>
+
+    <div class="clip" id="clip" hidden>
+      <img id="img-a" class="img-a" src="" alt="After">
+    </div>
+
+    <div class="line" id="line" hidden></div>
+
+    <div class="knob" id="knob" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l-6-6 6-6M15 6l6 6-6 6"/>
+      </svg>
+    </div>
+
+    <span class="badge badge-b" id="badge-b" hidden>Before</span>
+    <span class="badge badge-a" id="badge-a" hidden>After</span>
+
+  </div>
+  <p class="hint" id="hint" hidden>Drag anywhere on the image to reveal before or after</p>
+</div>
+
+<script>
+  const stage   = document.getElementById('stage');
+  const empty   = document.getElementById('empty');
+  const imgB    = document.getElementById('img-b');
+  const imgA    = document.getElementById('img-a');
+  const clip    = document.getElementById('clip');
+  const line    = document.getElementById('line');
+  const knob    = document.getElementById('knob');
+  const badgeB  = document.getElementById('badge-b');
+  const badgeA  = document.getElementById('badge-a');
+  const hint    = document.getElementById('hint');
+  const inB     = document.getElementById('in-b');
+  const inA     = document.getElementById('in-a');
+  const cardB   = document.getElementById('card-b');
+  const cardA   = document.getElementById('card-a');
+  const nmB     = document.getElementById('nm-b');
+  const nmA     = document.getElementById('nm-a');
+
+  let pos     = 50;
+  let loadedB = false;
+  let loadedA = false;
+  let drag    = false;
+
+  function clamp(v) { return Math.max(1, Math.min(99, v)); }
+
+  function setPos(pct) {
+    pos = clamp(pct);
+    clip.style.clipPath = `inset(0 0 0 ${pos}%)`;
+    line.style.left     = pos + '%';
+    knob.style.left     = pos + '%';
+  }
+
+  function px(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+
+  function toPct(clientX) {
+    const r = stage.getBoundingClientRect();
+    return ((clientX - r.left) / r.width) * 100;
+  }
+
+  function tryActivate() {
+    if (!loadedB || !loadedA) return;
+    empty.hidden  = true;
+    clip.hidden   = false;
+    line.hidden   = false;
+    knob.hidden   = false;
+    badgeB.hidden = false;
+    badgeA.hidden = false;
+    hint.hidden   = false;
+    setPos(pos);
+  }
+
+  function wire(input, img, nameEl, card, side) {
+    input.addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      img.src = URL.createObjectURL(f);
+      img.hidden = false;
+      card.classList.add('loaded');
+      nameEl.textContent = f.name.length > 24 ? f.name.slice(0, 22) + '…' : f.name;
+      if (side === 'b') loadedB = true; else loadedA = true;
+      tryActivate();
+    });
+  }
+
+  wire(inB, imgB, nmB, cardB, 'b');
+  wire(inA, imgA, nmA, cardA, 'a');
+
+  stage.addEventListener('mousedown',  e => { drag = true; setPos(toPct(px(e))); e.preventDefault(); });
+  window.addEventListener('mousemove', e => { if (drag) setPos(toPct(px(e))); });
+  window.addEventListener('mouseup',   ()  => { drag = false; });
+
+  stage.addEventListener('touchstart',  e => { drag = true; setPos(toPct(px(e))); }, { passive: true });
+  window.addEventListener('touchmove',  e => { if (drag) setPos(toPct(px(e))); }, { passive: true });
+  window.addEventListener('touchend',   ()  => { drag = false; });
+
+  setPos(50);
+</script>
+
+</body></html>

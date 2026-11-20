@@ -1,0 +1,9 @@
+figma_execute({
+  code: `
+    return figma.root.children.map(page => ({
+      id: page.id,
+      name: page.name,
+      isCurrent: page.id === figma.currentPage.id
+    }));
+  `
+})
