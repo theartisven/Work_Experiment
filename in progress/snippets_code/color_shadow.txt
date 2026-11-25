@@ -1,0 +1,177 @@
+figma_execute({
+  code: `
+    // 1. Open inline UI modal inside Figma to ask for the Hex Code
+    const hexInput = await new Promise((resolve) => {
+      figma.showUI(\`
+        <style>
+          body { font-family: Inter, sans-serif; padding: 16px; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+          label { font-size: 12px; font-weight: 600; color: #333; }
+          .row { display: flex; gap: 8px; }
+          input[type="text"] { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+          input[type="color"] { width: 38px; height: 36px; border: none; background: none; cursor: pointer; padding: 0; }
+          button { background: #0D99FF; color: white; border: none; padding: 9px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+          button:hover { background: #007BE5; }
+        </style>
+        <label for="hex">Enter Brand Hex Code for Colored Shadows:</label>
+        <div class="row">
+          <input type="color" id="picker" value="#3B82F6" />
+          <input type="text" id="hex" value="#3B82F6" placeholder="#3B82F6" />
+        </div>
+        <button id="submit">Generate 5 Base + 5 Colored Shadows</button>
+        <script>
+          const picker = document.getElementById('picker');
+          const hex = document.getElementById('hex');
+          picker.oninput = () => { hex.value = picker.value.toUpperCase(); };
+          hex.oninput = () => { if (/^#[0-9A-Fa-f]{6}$/.test(hex.value)) picker.value = hex.value; };
+          document.getElementById('submit').onclick = () => {
+            parent.postMessage({ pluginMessage: hex.value.trim() }, '*');
+          };
+        </script>
+      \`, { width: 300, height: 155, title: "Tailwind v4 Shadow Generator" });
+
+      figma.ui.onmessage = (msg) => {
+        figma.ui.close();
+        resolve(msg || "#3B82F6");
+      };
+    });
+
+    // 2. Convert Hex to Figma RGB (0–1)
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '');
+      const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+      const num = parseInt(full, 16);
+      if (isNaN(num)) return { r: 0.23, g: 0.51, b: 0.96 };
+      return {
+        r: ((num >> 16) & 255) / 255,
+        g: ((num >> 8) & 255) / 255,
+        b: (num & 255) / 255
+      };
+    }
+
+    const brandRgb = hexToRgb(hexInput);
+    const blackRgb = { r: 0, g: 0, b: 0 };
+
+    // 3. Shared Tailwind v4 Shadow Scale (5 Steps: xs, sm, md, lg, xl)
+    const scaleDefinitions = [
+      {
+        step: "xs",
+        layers: [
+          { offset: { x: 0, y: 1 }, radius: 2, spread: 0, baseAlpha: 0.05, coloredAlpha: 0.15 }
+        ]
+      },
+      {
+        step: "sm",
+        layers: [
+          { offset: { x: 0, y: 1 }, radius: 3, spread: 0, baseAlpha: 0.10, coloredAlpha: 0.22 },
+          { offset: { x: 0, y: 1 }, radius: 2, spread: -1, baseAlpha: 0.10, coloredAlpha: 0.14 }
+        ]
+      },
+      {
+        step: "md",
+        layers: [
+          { offset: { x: 0, y: 4 }, radius: 6, spread: -1, baseAlpha: 0.10, coloredAlpha: 0.25 },
+          { offset: { x: 0, y: 2 }, radius: 4, spread: -2, baseAlpha: 0.10, coloredAlpha: 0.15 }
+        ]
+      },
+      {
+        step: "lg",
+        layers: [
+          { offset: { x: 0, y: 10 }, radius: 15, spread: -3, baseAlpha: 0.10, coloredAlpha: 0.28 },
+          { offset: { x: 0, y: 4 }, radius: 6, spread: -4, baseAlpha: 0.10, coloredAlpha: 0.16 }
+        ]
+      },
+      {
+        step: "xl",
+        layers: [
+          { offset: { x: 0, y: 20 }, radius: 25, spread: -5, baseAlpha: 0.10, coloredAlpha: 0.30 },
+          { offset: { x: 0, y: 8 }, radius: 10, spread: -6, baseAlpha: 0.10, coloredAlpha: 0.18 }
+        ]
+      }
+    ];
+
+    // Build 5 Base Tokens + 5 Colored Tokens (10 Total)
+    const shadowTokens = [
+      ...scaleDefinitions.map(item => ({
+        name: \`shadow/base/\${item.step}\`,
+        effects: item.layers.map(l => ({
+          type: "DROP_SHADOW",
+          color: { ...blackRgb, a: l.baseAlpha },
+          offset: l.offset,
+          radius: l.radius,
+          spread: l.spread,
+          visible: true,
+          blendMode: "NORMAL"
+        }))
+      })),
+      ...scaleDefinitions.map(item => ({
+        name: \`shadow/colored/\${item.step}\`,
+        effects: item.layers.map(l => ({
+          type: "DROP_SHADOW",
+          color: { ...brandRgb, a: l.coloredAlpha },
+          offset: l.offset,
+          radius: l.radius,
+          spread: l.spread,
+          visible: true,
+          blendMode: "NORMAL"
+        }))
+      }))
+    ];
+
+    // 4. Create Effect Styles & 5-Column Preview Board
+    const existingStyles = await figma.getLocalEffectStylesAsync();
+    await figma.loadFontAsync({ family: "Inter", style: "Medium" });
+
+    const container = figma.createFrame();
+    container.name = \`Tailwind v4 Shadows (\${hexInput})\`;
+    container.layoutMode = "HORIZONTAL";
+    container.layoutWrap = "WRAP";
+    container.itemSpacing = 32;
+    container.counterAxisSpacing = 32;
+    container.paddingTop = 48;
+    container.paddingBottom = 48;
+    container.paddingLeft = 48;
+    container.paddingRight = 48;
+    container.resize(1124, 400);
+    container.primaryAxisSizingMode = "FIXED";
+    container.counterAxisSizingMode = "AUTO";
+    container.fills = [{ type: "SOLID", color: { r: 0.98, g: 0.98, b: 0.99 } }];
+
+    const createdStyles = [];
+
+    for (const token of shadowTokens) {
+      let style = existingStyles.find(s => s.name === token.name);
+      if (!style) {
+        style = figma.createEffectStyle();
+        style.name = token.name;
+      }
+      style.effects = token.effects;
+      createdStyles.push(style.name);
+
+      const card = figma.createFrame();
+      card.name = token.name;
+      card.resize(180, 120);
+      card.cornerRadius = 12;
+      card.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+      await card.setEffectStyleIdAsync(style.id);
+
+      const label = figma.createText();
+      label.fontName = { family: "Inter", style: "Medium" };
+      label.characters = token.name;
+      label.fontSize = 12;
+      label.x = 16;
+      label.y = 52;
+      card.appendChild(label);
+
+      container.appendChild(card);
+    }
+
+    figma.currentPage.appendChild(container);
+    figma.viewport.scrollAndZoomIntoView([container]);
+
+    return {
+      hexUsed: hexInput,
+      totalCreated: createdStyles.length,
+      styles: createdStyles
+    };
+  `
+})
