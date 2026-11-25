@@ -5,42 +5,43 @@
 
 <style>
 /* Layout: header · stacked color entries (picker, prefix, ramp) · export card */
+/* Notion-style palette: white page, warm grays, hairline borders, one blue accent */
 :root {
-  --bg:     #f8f9fb;
+  --bg:     #ffffff;
   --bg2:    #ffffff;
-  --bg3:    #f1f2f6;
-  --fg:     #0f1623;
-  --fg2:    #374151;
-  --fg3:    #6b7280;
-  --fg4:    #98a0af;
-  --border: #e3e6ed;
-  --accent: #2563eb;
-  --radius: 8px;
+  --bg3:    #f7f6f3;
+  --fg:     #37352f;
+  --fg2:    #5f5e5b;
+  --fg3:    #91918e;
+  --fg4:    #b4b4b0;
+  --border: #e9e9e7;
+  --accent: #2383e2;
+  --radius: 6px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:     #0d1017;
-    --bg2:    #141922;
-    --bg3:    #1c2333;
-    --fg:     #edf0f7;
-    --fg2:    #b8c0d4;
-    --fg3:    #5d6882;
-    --fg4:    #6b7691;
-    --border: #1e2a3e;
-    --accent: #4f80f7;
+    --bg:     #191919;
+    --bg2:    #202020;
+    --bg3:    #2f2f2f;
+    --fg:     #e6e6e6;
+    --fg2:    #b4b4b4;
+    --fg3:    #7f7f7f;
+    --fg4:    #5a5a5a;
+    --border: #2f2f2f;
+    --accent: #529cca;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg:     #0d1017;
-  --bg2:    #141922;
-  --bg3:    #1c2333;
-  --fg:     #edf0f7;
-  --fg2:    #b8c0d4;
-  --fg3:    #5d6882;
-  --fg4:    #6b7691;
-  --border: #1e2a3e;
-  --accent: #4f80f7;
+  --bg:     #191919;
+  --bg2:    #202020;
+  --bg3:    #2f2f2f;
+  --fg:     #e6e6e6;
+  --fg2:    #b4b4b4;
+  --fg3:    #7f7f7f;
+  --fg4:    #5a5a5a;
+  --border: #2f2f2f;
+  --accent: #529cca;
   color-scheme: dark;
 }
 
@@ -290,6 +291,8 @@ input[type="range"]::-moz-range-track { height: 6px; border-radius: 6px; backgro
 input[type="range"]::-moz-range-progress { height: 6px; border-radius: 6px; background: var(--accent); }
 input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg2); box-shadow: 0 1px 4px rgba(0,0,0,0.30); }
 input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+/* Keyboard focus: one visible ring for every control */
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Ramp */
 .ramp-wrap {
@@ -328,13 +331,59 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
   pointer-events: none;
   white-space: nowrap;
 }
-.ramp-cell:hover .ramp-label { opacity: 1; }
+.ramp-cell:hover .ramp-label,
+.ramp-cell:focus-visible .ramp-label { opacity: 1; }
+.ramp-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; z-index: 1; }
 
 .ramp-hint {
   font-size: 11px;
   color: var(--fg4);
   margin: 0;
 }
+
+/* Start / end hex inputs for a custom range */
+.range-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.hex-text::placeholder { color: var(--fg4); }
+.range-reset {
+  height: 42px;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--fg3); background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 0 14px; cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.range-reset:hover { color: var(--fg); border-color: var(--fg4); }
+
+/* Start / end hex chips above each ramp */
+.ramp-ends { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.end-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif; font-size: 12px; color: var(--fg2);
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+  padding: 3px 9px 3px 4px; cursor: pointer;
+  transition: border-color 0.12s;
+}
+.end-chip:hover { border-color: var(--accent); }
+.end-chip i { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.12); display: inline-block; }
+.end-chip b { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--fg); }
+.end-arrow { font-size: 12px; color: var(--fg4); }
+
+/* Ramp type selector */
+.segmented {
+  display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  align-self: flex-start;
+}
+.seg-btn {
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  color: var(--fg3); background: none; border: none; border-radius: 6px;
+  padding: 5px 12px; cursor: pointer;
+  transition: color 0.12s, background 0.12s;
+}
+.seg-btn:hover { color: var(--fg2); }
+.seg-btn.active { color: var(--fg); background: var(--bg2); box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+/* Press feedback lands on pointer-down, not on release */
+.seg-btn:active, .end-chip:active, .range-reset:active, .tab-btn:active { transform: scale(0.97); transition: transform 100ms ease-out; }
 
 .empty {
   font-size: 13px;
@@ -433,9 +482,84 @@ pre {
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
+/* Layout pass: tighter header, per-color card header, copy action in the tab bar, phone stacking */
+.app { max-width: 980px; gap: 24px; }
+.header { flex-direction: column; align-items: flex-start; gap: 6px; }
+.header h1 { font-size: 22px; }
+.page-sub { margin: 0; font-size: 13px; color: var(--fg3); }
+#entries { gap: 16px; }
+.entry { padding: 16px; gap: 16px; }
+.entry-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.entry-title { font-size: 13px; font-weight: 600; color: var(--fg2); }
+.entry-controls { gap: 16px 20px; align-items: flex-end; }
+.toggles { padding-bottom: 0; }
+.ramp { height: 112px; }
+.ramp-ends { justify-content: flex-start; }
+.code-tabs { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px; }
+.code-tabs .copy-all-btn { margin-left: auto; }
+@media (max-width: 640px) {
+  body { padding-block: 24px 48px; }
+  .header h1 { font-size: 20px; }
+  .entry-controls > .field { width: 100%; }
+  .prefix-input { width: 100%; }
+  .range-row > .field { flex: 1 1 100%; }
+  .range-reset { width: 100%; }
+  .toggles { width: 100%; }
+  .ramp { height: 88px; }
+}
+
+/* Compact pass: tighter paddings, 36px controls, shorter ramps */
+body { padding-block: 20px 40px; }
+.app { gap: 14px; }
+.header { gap: 4px; }
+.header h1 { font-size: 20px; }
+.variant-card { padding: 12px; gap: 10px; }
+.variant-head { gap: 8px; }
+.sliders { gap: 10px 20px; }
+.slider-head { margin-bottom: 4px; }
+#entries { gap: 10px; }
+.entry { padding: 12px; gap: 10px; }
+.entry-controls { gap: 12px 14px; }
+.toggles { gap: 6px; }
+.color-row, .prefix-input, .remove-btn, .range-reset { height: 36px; }
+.remove-btn { width: 36px; }
+input[type="color"] { width: 40px; }
+.hex-text { width: 96px; }
+.prefix-input { width: 150px; }
+.range-row { gap: 10px; }
+.ramp { height: 84px; }
+.md-fields { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); }
+.md-fields .prefix-input { width: 200px; max-width: 100%; }
+.ramp-ends { gap: 6px; }
+.end-chip { padding: 2px 8px 2px 4px; }
+.code-tabs { padding: 0 6px; }
+.tab-btn { padding: 6px 10px 5px; }
+.code-tabs .copy-all-btn { padding: 3px 9px; }
+pre { padding: 10px 12px; }
+.empty { padding: 16px; }
+@media (max-width: 640px) {
+  .prefix-input { width: 100%; }
+}
+
+/* Reference layout: two-card top row, one-line color rows, ramp footer */
+.top-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.side-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.side-col .add-btn { align-self: stretch; margin-left: 0; text-align: center; padding: 9px 12px; border: 1px dashed var(--fg4); background: var(--bg2); }
+.entry-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.entry-id { display: flex; flex-direction: column; gap: 6px; margin-right: 4px; }
+.entry-row .color-row, .entry-row .prefix-input { width: 150px; }
+.ramp-ends { display: none; }
+.ramp-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ramp-foot .range-reset { height: 28px; padding: 0 10px; font-size: 12px; }
+@media (max-width: 880px) { .top-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .entry-row .field, .entry-row .entry-id { width: 100%; }
+  .entry-row .color-row, .entry-row .prefix-input { width: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ramp-cell, .track, .track::after, .add-btn, .copy-all-btn, .remove-btn { transition: none; }
-  .ramp-cell:active, .add-btn:active, .copy-all-btn:active, .remove-btn:active { transform: none; }
+  .ramp-cell, .track, .track::after, .add-btn, .copy-all-btn, .remove-btn, .seg-btn, .end-chip, .range-reset, .tab-btn { transition: none; }
+  .ramp-cell:active, .add-btn:active, .copy-all-btn:active, .remove-btn:active, .seg-btn:active, .end-chip:active, .range-reset:active, .tab-btn:active { transform: none; }
   .toast { transform: translateX(-50%); opacity: 0; transition: opacity 0.2s ease; }
   .toast.show { opacity: 1; transform: translateX(-50%); }
 }
@@ -445,8 +569,10 @@ pre {
   <div class="header">
     <h1>Shade Generator</h1>
     <span class="badge">Tailwind v4 · OKLCH</span>
+    <p class="page-sub">Pick a base color, choose a ramp type, then click any shade to copy it.</p>
   </div>
 
+  <div class="top-grid">
   <div class="variant-card">
     <div class="variant-head">
       <div>
@@ -475,18 +601,45 @@ pre {
     </div>
   </div>
 
-  <div id="entries"></div>
+  <div class="side-col">
+  <div class="variant-card">
+    <div class="variant-head">
+      <div>
+        <div class="variant-title">Ramp type</div>
+      </div>
+    </div>
+    <div class="segmented" id="modeSeg">
+      <button class="seg-btn active" data-mode="tailwind">Tailwind</button>
+      <button class="seg-btn" data-mode="mix">Mixed</button>
+      <button class="seg-btn" data-mode="tints">Tints</button>
+      <button class="seg-btn" data-mode="shades">Shades</button>
+      <button class="seg-btn" data-mode="tones">Tones</button>
+    </div>
+  </div>
+
   <button class="add-btn" id="addBtn">+ Add color</button>
+  </div>
+  </div>
+
+  <div id="entries"></div>
 
   <div class="code-card">
     <div class="code-tabs">
-      <button class="tab-btn active" data-tab="css">CSS Variables</button>
+      <button class="tab-btn" data-tab="css">CSS Variables</button>
       <button class="tab-btn" data-tab="js">JS Object</button>
       <button class="tab-btn" data-tab="oklch">OKLCH</button>
-      <button class="tab-btn" data-tab="md">Markdown Table</button>
-    </div>
-    <div class="code-toolbar">
+      <button class="tab-btn active" data-tab="md">Markdown Table</button>
       <button class="copy-all-btn" id="copyAll">Copy all</button>
+    </div>
+    <div class="md-fields" id="mdFields" hidden>
+      <label class="field">
+        <span class="field-label">Variable collection</span>
+        <input type="text" class="prefix-input" id="varColl" value="Primitive" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="field-label">Parent</span>
+        <input type="text" class="prefix-input" id="parentIn" value="Colors" spellcheck="false">
+      </label>
     </div>
     <pre id="codeOut"></pre>
   </div>
@@ -548,6 +701,10 @@ const STOPS = [
 
 function generate(hexColor, prefix, opts = {}) {
   if (!/^#[0-9a-fA-F]{6}$/.test(hexColor)) return null;
+  if (opts.start || opts.end) return generateRange(hexColor, prefix, opts);
+  // Tailwind: base is pinned at 500 and the other steps are remapped around it (same as Mixed with the middle toggle on)
+  if (opts.mode === 'tailwind') return generate(hexColor, prefix, { ...opts, mode: 'mix', include: true, middle: true });
+  if (opts.mode && opts.mode !== 'mix' && opts.mode !== 'tailwind') return generateMode(hexColor, prefix, opts.mode, opts);
   const [L, C, H] = hexToOklch(hexColor);
 
   let best = 0, bestD = Infinity;
@@ -587,6 +744,69 @@ function generate(hexColor, prefix, opts = {}) {
   });
 }
 
+// ── Ramp types: tints, shades, tones ───────────────────────────────────────
+// Mixing happens in OKLab so the steps stay perceptually even.
+function labOf(hex) {
+  const [L, C, H] = hexToOklch(hex);
+  const h = H * Math.PI / 180;
+  return [L, C * Math.cos(h), C * Math.sin(h)];
+}
+function hexOfLab(L, a, b) {
+  let H = Math.atan2(b, a) * 180 / Math.PI;
+  if (H < 0) H += 360;
+  return oklchToHex(L, Math.hypot(a, b), H);
+}
+function mixHex(hexA, hexB, w) {
+  const A = labOf(hexA), B = labOf(hexB);
+  return hexOfLab(A[0] + (B[0] - A[0]) * w, A[1] + (B[1] - A[1]) * w, A[2] + (B[2] - A[2]) * w);
+}
+function generateMode(hexColor, prefix, mode, opts) {
+  const base = hexColor.toLowerCase();
+  const last = STOPS.length - 1;
+  let steps;
+  if (mode === 'tints') {
+    // Base is the darkest step (950); lighter steps mix toward white
+    steps = STOPS.map(([shade], i) => ({ shade, hex: i === last ? base : mixHex(base, '#ffffff', 0.95 * (1 - i / last)) }));
+  } else if (mode === 'shades') {
+    // Base is the lightest step (25); darker steps mix toward black
+    steps = STOPS.map(([shade], i) => ({ shade, hex: i === 0 ? base : mixHex(base, '#000000', 0.95 * (i / last)) }));
+  } else {
+    // Tones: the Mixed ramp pulled halfway toward neutral gray at the same lightness; base sits at 500
+    const mixed = generate(hexColor, prefix, { mode: 'mix' });
+    steps = mixed.map(s => {
+      const L = labOf(s.hex)[0];
+      return { shade: s.shade, hex: s.shade === 500 ? base : mixHex(s.hex, hexOfLab(L, 0, 0), 0.5) };
+    });
+  }
+  return steps.map(({ shade, hex }) => {
+    if (opts.dark) hex = toDarkVariant(hex, opts.dark.sat, opts.dark.bright);
+    const [L, C, H] = hexToOklch(hex);
+    return { shade, name: `${prefix}-${shade}`, hex, L, C, H };
+  });
+}
+
+// Custom start and/or end override the ramp type; a missing end falls back to the auto value
+function generateRange(hexColor, prefix, opts) {
+  const auto = generate(hexColor, prefix, { include: opts.include, middle: opts.middle, mode: opts.mode });
+  const start = opts.start || auto[0].hex;
+  const end = opts.end || auto[auto.length - 1].hex;
+  const last = STOPS.length - 1;
+  return STOPS.map(([shade], i) => {
+    // Start -> base -> end. Middle toggle on: base sits at 500. Off: base sits at the step whose lightness is closest to it.
+    const L0 = labOf(hexColor)[0];
+    const mid = opts.middle ? 6 : STOPS.reduce((best, [, sL], j) => (j > 0 && j < last && Math.abs(sL - L0) < Math.abs(STOPS[best][1] - L0) ? j : best), 1);
+    let hex;
+    if (i === 0) hex = start;
+    else if (i === last) hex = end;
+    else if (i === mid) hex = hexColor.toLowerCase();
+    else if (i < mid) hex = mixHex(start, hexColor, i / mid);
+    else hex = mixHex(hexColor, end, (i - mid) / (last - mid));
+    if (opts.dark) hex = toDarkVariant(hex, opts.dark.sat, opts.dark.bright);
+    const [L, C, H] = hexToOklch(hex);
+    return { shade, name: `${prefix}-${shade}`, hex, L, C, H };
+  });
+}
+
 function relLuminance(hex) {
   const r = lin(parseInt(hex.slice(1,3), 16) / 255);
   const g = lin(parseInt(hex.slice(3,5), 16) / 255);
@@ -615,7 +835,8 @@ function darkOpts() {
 
 let uid = 0;
 const palettes = [];
-let tab = 'css';
+let tab = 'md';
+let rampMode = 'tailwind'; // tailwind | mix | tints | shades | tones
 
 function addPalette(hex = '#6366f1', prefix = 'brand') {
   palettes.push({ id: ++uid, hex, prefix });
@@ -626,7 +847,7 @@ addPalette('#10b981', 'accent');
 // Valid palettes with generated shades
 function allPalettes() {
   return palettes
-    .map(p => ({ ...p, shades: generate(p.hex, p.prefix.trim() || 'brand', { include: p.include, middle: p.middle, dark: darkOpts() }) }))
+    .map(p => ({ ...p, shades: generate(p.hex, p.prefix.trim() || 'brand', { include: p.include, middle: p.middle, dark: darkOpts(), mode: rampMode, start: p.start, end: p.end }) }))
     .filter(p => p.shades);
 }
 
@@ -638,26 +859,47 @@ function buildEntry(p) {
   el.className = 'entry';
   el.dataset.id = p.id;
   el.innerHTML = `
-    <div class="entry-controls">
-      <div class="field">
-        <span class="field-label">Base Color</span>
-        <div class="color-row">
-          <input type="color" class="picker" value="${p.hex}" aria-label="Base color">
-          <input type="text" class="hex-text" value="${p.hex}" maxlength="7" spellcheck="false" aria-label="Hex value">
+    <div class="entry-row">
+      <div class="entry-id">
+        <span class="entry-title">Color ${palettes.indexOf(p) + 1}</span>
+        <div class="toggles">
+          <label class="switch"><input type="checkbox" class="inc-toggle" ${p.include ? 'checked' : ''}><span class="track"></span><span>Base is one of the shades</span></label>
+          <label class="switch"><input type="checkbox" class="mid-toggle" ${p.middle ? 'checked' : ''}><span class="track"></span><span>Base is the middle (500)</span></label>
         </div>
       </div>
       <div class="field">
         <span class="field-label">Prefix</span>
         <input type="text" class="prefix-input" value="${p.prefix}" placeholder="brand" aria-label="Prefix">
       </div>
-      <div class="toggles">
-        <label class="switch"><input type="checkbox" class="inc-toggle" ${p.include ? 'checked' : ''}><span class="track"></span><span>Base is one of the shades</span></label>
-        <label class="switch"><input type="checkbox" class="mid-toggle" ${p.middle ? 'checked' : ''}><span class="track"></span><span>Base is the middle (500)</span></label>
+      <div class="field">
+        <span class="field-label">Start</span>
+        <div class="color-row">
+          <input type="color" class="start-picker" aria-label="Start color">
+          <input type="text" class="start-text hex-text" maxlength="7" placeholder="Auto" spellcheck="false" aria-label="Start hex">
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label">Base color</span>
+        <div class="color-row">
+          <input type="color" class="picker" value="${p.hex}" aria-label="Base color">
+          <input type="text" class="hex-text" value="${p.hex}" maxlength="7" spellcheck="false" aria-label="Hex value">
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label">End</span>
+        <div class="color-row">
+          <input type="color" class="end-picker" aria-label="End color">
+          <input type="text" class="end-text hex-text" maxlength="7" placeholder="Auto" spellcheck="false" aria-label="End hex">
+        </div>
       </div>
       <button class="remove-btn" title="Remove color" aria-label="Remove color">×</button>
     </div>
+    <div class="ramp-ends"></div>
     <div class="ramp-wrap"><div class="ramp"></div></div>
-    <p class="ramp-hint">Click any shade to copy its hex value</p>
+    <div class="ramp-foot">
+      <p class="ramp-hint">Click any shade to copy its hex value</p>
+      <button class="range-reset">Reset to auto</button>
+    </div>
   `;
 
   el.querySelector('.picker').addEventListener('input', e => {
@@ -693,19 +935,71 @@ function buildEntry(p) {
     refresh(el, p);
   });
 
+  const bindEnd = key => {
+    const picker = el.querySelector(`.${key}-picker`);
+    const text = el.querySelector(`.${key}-text`);
+    picker.addEventListener('input', e => {
+      p[key] = e.target.value;
+      text.value = p[key];
+      refresh(el, p);
+    });
+    text.addEventListener('input', e => {
+      const raw = e.target.value.trim();
+      if (raw === '') { p[key] = null; refresh(el, p); return; }
+      const v = raw.startsWith('#') ? raw : '#' + raw;
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+        p[key] = v;
+        picker.value = v;
+        refresh(el, p);
+      }
+    });
+  };
+  bindEnd('start');
+  bindEnd('end');
+
+  el.querySelector('.range-reset').addEventListener('click', () => {
+    p.start = null; p.end = null;
+    syncRange(el, p);
+    refresh(el, p);
+  });
+
   el.querySelector('.remove-btn').addEventListener('click', () => {
     const i = palettes.indexOf(p);
     if (i > -1) palettes.splice(i, 1);
     renderEntries();
   });
 
+  syncRange(el, p);
   return el;
+}
+
+// Fill the start/end inputs: show the custom value, or the auto value as a placeholder-style default
+function syncRange(el, p) {
+  const auto = generate(p.hex, p.prefix.trim() || 'brand', { include: p.include, middle: p.middle, mode: rampMode });
+  const fallback = { start: auto ? auto[0].hex : '#000000', end: auto ? auto[auto.length - 1].hex : '#ffffff' };
+  ['start', 'end'].forEach(key => {
+    el.querySelector(`.${key}-picker`).value = p[key] || fallback[key];
+    el.querySelector(`.${key}-text`).value = p[key] || '';
+  });
+}
+
+function renderEnds(el, shades) {
+  const box = el.querySelector('.ramp-ends');
+  box.innerHTML = '';
+  if (!shades) return;
+  const first = shades[0], last = shades[shades.length - 1];
+  box.innerHTML = `
+    <button class="end-chip" data-hex="${first.hex}"><i style="background:${first.hex}"></i>Start (${first.shade}) <b>${first.hex}</b></button>
+    <span class="end-arrow">→</span>
+    <button class="end-chip" data-hex="${last.hex}"><i style="background:${last.hex}"></i>End (${last.shade}) <b>${last.hex}</b></button>`;
+  box.querySelectorAll('.end-chip').forEach(b => b.addEventListener('click', () => copy(b.dataset.hex, `Copied ${b.dataset.hex}`)));
 }
 
 function renderRamp(el, p) {
   const ramp = el.querySelector('.ramp');
-  const shades = generate(p.hex, p.prefix.trim() || 'brand', { include: p.include, middle: p.middle, dark: darkOpts() });
+  const shades = generate(p.hex, p.prefix.trim() || 'brand', { include: p.include, middle: p.middle, dark: darkOpts(), mode: rampMode, start: p.start, end: p.end });
   ramp.innerHTML = '';
+  renderEnds(el, shades);
   if (!shades) return;
   shades.forEach(s => {
     const cell = document.createElement('div');
@@ -715,6 +1009,11 @@ function renderRamp(el, p) {
     const cb = contrastRatio(s.hex, '#000000');
     cell.title = `${s.name} · ${s.hex} · ${cw.toFixed(2)}:1 on white · ${cb.toFixed(2)}:1 on black`;
     cell.innerHTML = `<span class="ramp-label" style="color:${contrastText(s.hex)}"><b>${s.shade}</b><span>${s.hex}</span></span>`;
+    // Keyboard users can reach and activate every shade, same as a pointer
+    cell.tabIndex = 0;
+    cell.setAttribute('role', 'button');
+    cell.setAttribute('aria-label', `${s.name} ${s.hex}, copy`);
+    cell.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cell.click(); } });
     cell.addEventListener('click', () => copy(s.hex, `Copied ${s.hex}`));
     ramp.appendChild(cell);
   });
@@ -745,6 +1044,7 @@ function renderEntries() {
 // ── Export ─────────────────────────────────────────────────────────────────
 function renderCode() {
   const out = document.getElementById('codeOut');
+  document.getElementById('mdFields').hidden = tab !== 'md';
   const sets = allPalettes();
   if (sets.length === 0) { out.textContent = '/* Add a color to generate shades */'; return; }
 
@@ -761,8 +1061,14 @@ function renderCode() {
       p.shades.map(s => `  --${s.name}: oklch(${(s.L * 100).toFixed(2)}% ${s.C.toFixed(4)} ${s.H.toFixed(2)});`)
     ).join('\n') + '\n}';
   } else {
-    const rows = sets.flatMap(p => p.shades.map(s => `| ${s.name} | ${s.hex} |`)).join('\n');
-    out.textContent = `| Name | Value |\n| --- | --- |\n${rows}`;
+    // Name = {Parent}/{Prefix}/{Number}; empty parts are skipped
+    const coll = document.getElementById('varColl').value.trim() || 'Variables';
+    const parent = document.getElementById('parentIn').value.trim();
+    const rows = sets.flatMap(p => {
+      const pre = p.prefix.trim() || 'brand';
+      return p.shades.map(s => `| ${[parent, pre, s.shade].filter(Boolean).join('/')} | ${s.hex} |`);
+    }).join('\n');
+    out.textContent = `Add these to "${coll}" variable collection\n\n| Name | Value |\n| --- | --- |\n${rows}`;
   }
 }
 
@@ -799,6 +1105,16 @@ document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click
 
 document.getElementById('copyAll').addEventListener('click', () =>
   copy(document.getElementById('codeOut').textContent, 'Copied to clipboard!'));
+
+// Markdown export fields
+['varColl', 'parentIn'].forEach(id => document.getElementById(id).addEventListener('input', renderCode));
+
+// Ramp type selector
+document.querySelectorAll('.seg-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+  rampMode = btn.dataset.mode;
+  refreshAll();
+}));
 
 // ── Dark variant controls ──────────────────────────────────────────────────
 function refreshAll() {

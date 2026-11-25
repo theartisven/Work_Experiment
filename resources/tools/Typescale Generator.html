@@ -1,0 +1,643 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Typescale Generator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --fg:#37352f; --muted:#787774; --line:#e9e9e7; --field:#f7f6f3; --accent:#2383e2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --line:#2f2f2f; --field:#242424; --accent:#529cca; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --line:#2f2f2f; --field:#242424; --accent:#529cca; color-scheme:dark; }
+
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:32px;
+}
+h1{font-size:22px; font-weight:600; margin:0 0 4px}
+.hint{font-size:12px; color:var(--muted); margin:0}
+.wrap{max-width:1200px; margin:24px auto 0; display:grid; grid-template-columns:280px minmax(0,1fr); gap:32px; align-items:start}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr); gap:20px}
+  main{order:-1}
+  th,td{padding:8px 10px}
+}
+td:first-child:not(.group),th:first-child{position:sticky; left:0; z-index:1}
+td:first-child:not(.group){background:var(--bg)}
+.table-wrap{max-width:100%}
+@media (max-width:600px){
+  .table-wrap{overflow-x:visible}
+  thead{display:none}
+  table,tbody{display:block}
+  tbody tr{display:flex; flex-wrap:wrap; column-gap:14px; padding:10px 12px; border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:0}
+  tbody tr:has(td.group){padding:0}
+  tbody td{border:0; padding:0; font-size:12px; color:var(--muted); white-space:normal; min-width:0; max-width:100%}
+  td[data-l]:not([data-l=""])::before{content:attr(data-l) " "; opacity:.7}
+  td:first-child:not(.group){position:static; background:none; flex-basis:100%; font-size:13px; font-weight:600; color:var(--fg); padding-bottom:2px}
+  td.group{flex-basis:100%; padding:6px 12px}
+  td:last-child:not(.group){flex-basis:100%; padding-top:6px; color:var(--fg); overflow-x:auto}
+  td .preview{white-space:normal; overflow-wrap:anywhere}
+}
+
+.group{border-top:1px solid var(--line); padding-top:14px; margin-top:16px}
+.group:first-child{border-top:0; margin-top:0; padding-top:0}
+.group h2{font-size:12px; font-weight:600; color:var(--muted); margin:0 0 10px}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.field{margin-bottom:10px; min-width:0}
+label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px}
+input[type=checkbox]{width:auto; margin-right:6px; vertical-align:-2px}
+label.check{display:flex; align-items:center; color:var(--fg); font-size:13px; margin:0}
+input,select{
+  width:100%; box-sizing:border-box; background:var(--field); color:var(--fg);
+  border:1px solid var(--line); border-radius:4px; padding:6px 8px; font:inherit;
+}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+main{min-width:0}
+.table-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px}
+table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+th,td{text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap; font-size:13px}
+tr:last-child td{border-bottom:0}
+th{font-weight:500; color:var(--muted); background:var(--field)}
+td.base-row{font-weight:600}
+td:last-child{white-space:normal}
+.preview{white-space:normal; display:block; min-width:240px; overflow-wrap:anywhere}
+td.group{font-weight:600; color:var(--muted); background:var(--field)}
+.tabs{display:flex; gap:4px; margin-bottom:12px; border-bottom:1px solid var(--line)}
+.tabs button{border:0; border-bottom:2px solid transparent; border-radius:0; padding:6px 12px; margin-bottom:-1px; color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--fg); border-bottom-color:var(--fg)}
+h2[data-toggle]{cursor:pointer; user-select:none}
+h2[data-toggle]::before{content:"\25BE\00a0"; color:var(--muted)}
+h2[data-toggle][aria-expanded="false"]::before{content:"\25B8\00a0"}
+h2[data-toggle]:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
+
+details{margin-top:16px}
+summary{cursor:pointer; user-select:none; font-size:14px; font-weight:600; padding:4px 0}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
+.actions{display:flex; align-items:center; gap:12px; margin:16px 0 10px; flex-wrap:wrap}
+button{
+  background:none; color:var(--fg); border:1px solid var(--line); border-radius:4px;
+  padding:6px 12px; font:inherit; cursor:pointer;
+}
+button:hover{background:var(--field)}
+pre{
+  background:var(--field); border:1px solid var(--line); border-radius:6px;
+  padding:12px 14px; overflow-x:auto; font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin:0; color:var(--fg)
+}
+</style>
+</head>
+<body>
+<h1>Typescale</h1>
+<p class="hint">Add these to text styles</p>
+<p class="hint">Set a base size, a ratio and the limits. The scale updates as you type.</p>
+
+<div class="wrap">
+  <aside>
+    <div class="group">
+      <h2>Preview</h2>
+      <div class="field"><label for="previewText">Preview text</label><input id="previewText" type="text" value="The quick brown fox jumps over the lazy dog" autocomplete="off"></div>
+    </div>
+
+    <div class="group">
+      <h2>Base</h2>
+      <div class="row">
+        <div class="field"><label for="base">Base size (px)</label><input id="base" type="number" value="16" min="1" step="1"></div>
+        <div class="field"><label for="min">Min size (px)</label><input id="min" type="number" value="12" min="1" step="1"></div>
+      </div>
+      <div class="field">
+        <label for="preset">Scale preset</label>
+        <select id="preset">
+          <option value="">Custom</option>
+          <option value="1.067">Minor second (1.067)</option>
+          <option value="1.125">Major second (1.125)</option>
+          <option value="1.2">Minor third (1.2)</option>
+          <option value="1.25" selected>Major third (1.25)</option>
+          <option value="1.333">Perfect fourth (1.333)</option>
+          <option value="1.414">Augmented fourth (1.414)</option>
+          <option value="1.5">Perfect fifth (1.5)</option>
+          <option value="1.618">Golden ratio (1.618)</option>
+        </select>
+      </div>
+      <div class="field"><label for="scale">Scale ratio</label><input id="scale" type="number" value="1.25" min="1.01" step="0.001"></div>
+      <div class="field">
+        <label for="weight">Weight</label>
+        <select id="weight">
+          <option value="300">300 Light</option>
+          <option value="400" selected>400 Regular</option>
+          <option value="500">500 Medium</option>
+          <option value="600">600 Semibold</option>
+          <option value="700">700 Bold</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="boldWeight">Bold weight (Bold variants)</label>
+        <select id="boldWeight">
+          <option value="500">500 Medium</option>
+          <option value="600">600 Semibold</option>
+          <option value="700" selected>700 Bold</option>
+          <option value="800">800 Extra bold</option>
+          <option value="900">900 Black</option>
+        </select>
+      </div>
+      <div class="field"><label for="decimals">Decimal places (max)</label><input id="decimals" type="number" value="2" min="0" max="6" step="1"></div>
+      <div class="field">
+        <label for="mode">Rounding mode (to nearest 4 px)</label>
+        <select id="mode">
+          <option value="nearest" selected>Nearest 4</option>
+          <option value="down">Round down</option>
+          <option value="up">Round up</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Font family</h2>
+      <div class="field"><label for="fontDisplay">Display</label><select id="fontDisplay"><option selected value="'Inter', ui-sans-serif, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', ui-sans-serif, system-ui, sans-serif">Space Grotesk</option><option value="'DM Sans', ui-sans-serif, system-ui, sans-serif">DM Sans</option><option value="'Playfair Display', Georgia, serif">Playfair Display</option><option value="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">System sans</option></select></div>
+      <div class="field"><label for="fontHeading">Heading</label><select id="fontHeading"><option selected value="'Inter', ui-sans-serif, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', ui-sans-serif, system-ui, sans-serif">Space Grotesk</option><option value="'DM Sans', ui-sans-serif, system-ui, sans-serif">DM Sans</option><option value="'Playfair Display', Georgia, serif">Playfair Display</option><option value="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">System sans</option></select></div>
+      <div class="field"><label for="fontBody">Body, Label, Caption, Link</label><select id="fontBody"><option selected value="'Inter', ui-sans-serif, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', ui-sans-serif, system-ui, sans-serif">Space Grotesk</option><option value="'DM Sans', ui-sans-serif, system-ui, sans-serif">DM Sans</option><option value="'Playfair Display', Georgia, serif">Playfair Display</option><option value="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">System sans</option></select></div>
+      <div class="field"><label for="fontCode">Code</label><select id="fontCode"><option selected value="'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace">JetBrains Mono</option><option value="'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace">IBM Plex Mono</option><option value="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">System mono</option></select></div>
+    </div>
+
+    <div class="group">
+      <h2>Fluid (CSS clamp)</h2>
+      <div class="field"><label class="check" for="fluidOn"><input id="fluidOn" type="checkbox" checked> Use clamp() in CSS export</label></div>
+      <div class="row">
+        <div class="field"><label for="vMin">Min viewport (px)</label><input id="vMin" type="number" value="375" min="200" step="1"></div>
+        <div class="field"><label for="vMax">Max viewport (px)</label><input id="vMax" type="number" value="1280" min="300" step="1"></div>
+      </div>
+      <div class="field"><label for="shrink">Shrink at min viewport (%)</label><input id="shrink" type="number" value="40" min="0" max="90" step="5"></div>
+      <p class="hint">Sizes above the base size scale down by this share of their distance from the base. Base and smaller sizes stay fixed.</p>
+    </div>
+
+    <div class="group">
+      <h2>Steps</h2>
+      <div class="row">
+        <div class="field"><label for="up">Above base</label><input id="up" type="number" value="5" min="0" max="12" step="1"></div>
+        <div class="field"><label for="down">Below base</label><input id="down" type="number" value="3" min="0" max="8" step="1"></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Line height</h2>
+      <div class="row">
+        <div class="field"><label for="lhMin">Min</label><input id="lhMin" type="number" value="1.2" step="0.05"></div>
+        <div class="field"><label for="lhMax">Max</label><input id="lhMax" type="number" value="1.3" step="0.05"></div>
+      </div>
+      <div class="field">
+        <label for="lhDir">Direction</label>
+        <select id="lhDir">
+          <option value="asc" selected>Ascending: larger steps get max</option>
+          <option value="desc">Descending: larger steps get min</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Letter spacing (em)</h2>
+      <div class="row">
+        <div class="field"><label for="lsMin">Min</label><input id="lsMin" type="number" value="0" step="0.005"></div>
+        <div class="field"><label for="lsMax">Max</label><input id="lsMax" type="number" value="0.03" step="0.005"></div>
+      </div>
+      <div class="field">
+        <label for="lsDir">Direction</label>
+        <select id="lsDir">
+          <option value="asc">Ascending: larger steps get max</option>
+          <option value="desc" selected>Descending: larger steps get min</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="tabs" role="tablist" aria-label="View">
+      <button type="button" role="tab" id="tab-typography" data-view="typography" aria-selected="true">Typography</button>
+      <button type="button" role="tab" id="tab-scale" data-view="scale" aria-selected="false">Scale</button>
+    </div>
+    <div id="view-scale" hidden>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Step</th><th>px</th><th>rem</th><th>Line height</th><th>Letter spacing</th><th>Preview</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    </div>
+    <div id="view-typography">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Style</th><th>Font</th><th>px</th><th>Line height</th><th>Letter spacing</th><th>Weight</th><th>Preview</th></tr>
+        </thead>
+        <tbody id="named"></tbody>
+      </table>
+    </div>
+    </div>
+    <details id="cssBox">
+    <summary>Export</summary>
+    <div class="actions">
+      <select id="exportFmt" aria-label="Export format" style="width:auto">
+        <option value="css-classes">CSS classes</option>
+        <option value="css-vars">CSS variables</option>
+        <option value="md-table" selected>Markdown table (Figma, docs)</option>
+        <option value="figma-vars">Figma variables (plugin script)</option>
+        <option value="figma-styles">Figma text styles (plugin script)</option>
+      </select>
+      <button id="copy" type="button">Copy</button>
+      <span id="status" class="hint" role="status"></span>
+    </div>
+    <pre id="css"></pre>
+    </details>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const num = (id, fallback) => {
+  const v = parseFloat($(id).value);
+  return Number.isFinite(v) ? v : fallback;
+};
+const fx = n => +n.toFixed(Math.min(6, Math.max(0, Math.round(num('decimals', 2)))));
+const round4 = (v, mode) => {
+  if (mode === 'down') return Math.floor(v / 4) * 4;
+  if (mode === 'up') return Math.ceil(v / 4) * 4;
+  return Math.round(v / 4) * 4;
+};
+const lerp = (a, b, t, dir) => dir === 'asc' ? a + (b - a) * t : b + (a - b) * t;
+const label = k => k === 0 ? 'Base' : (k > 0 ? '+' + k : '−' + Math.abs(k));
+
+function build() {
+  const base = Math.max(1, num('base', 16));
+  const min = Math.max(1, num('min', 12));
+  const ratio = Math.max(1.01, num('scale', 1.25));
+  const mode = $('mode').value;
+  const up = Math.max(0, Math.round(num('up', 5)));
+  const down = Math.max(0, Math.round(num('down', 2)));
+  const lhMin = num('lhMin', 1.2), lhMax = num('lhMax', 1.6), lhDir = $('lhDir').value;
+  const lsMin = num('lsMin', -0.01), lsMax = num('lsMax', 0.02), lsDir = $('lsDir').value;
+
+  const steps = [];
+  for (let k = -down; k <= up; k++) {
+    const raw = base * Math.pow(ratio, k);
+    steps.push({ k, size: Math.max(min, round4(raw, mode)) });
+  }
+
+  const n = steps.length;
+  steps.forEach((s, i) => {
+    const t = n > 1 ? i / (n - 1) : 0;
+    s.lh = fx(lerp(lhMin, lhMax, t, lhDir));
+    s.ls = fx(lerp(lsMin, lsMax, t, lsDir));
+  });
+  return { steps, weight: $('weight').value };
+}
+
+function render() {
+  const { steps, weight } = build();
+
+  const rows = $('rows');
+  rows.textContent = '';
+  for (const s of [...steps].reverse()) {
+    const tr = document.createElement('tr');
+    const cells = [
+      label(s.k),
+      s.size + ' px',
+      fx(s.size / 16) + ' rem',
+      String(s.lh),
+      s.ls + ' em'
+    ];
+    const SCALE_LABELS = ['', 'px', 'rem', 'Line height', 'Letter spacing'];
+    cells.forEach((text, i) => {
+      const td = document.createElement('td');
+      td.textContent = text;
+      td.dataset.l = SCALE_LABELS[i];
+      if (s.k === 0 && i === 0) td.className = 'base-row';
+      tr.appendChild(td);
+    });
+    const pv = document.createElement('td');
+    const span = document.createElement('span');
+    span.className = 'preview';
+    span.textContent = $('previewText').value || 'Aa';
+    span.style.fontSize = s.size + 'px';
+    span.style.lineHeight = String(s.lh);
+    span.style.letterSpacing = s.ls + 'em';
+    span.style.fontWeight = weight;
+    pv.appendChild(span);
+    tr.appendChild(pv);
+    rows.appendChild(tr);
+  }
+
+  renderNamed(steps, weight);
+}
+
+// Named styles mapped to scale steps (k): [group, name, step, bold]
+const STYLES = [
+  ['Display', '2XL', 5], ['Display', '2XL Bold', 5, true],
+  ['Display', 'XL', 4], ['Display', 'XL Bold', 4, true],
+  ['Display', 'Lg', 3], ['Display', 'Lg Bold', 3, true],
+  ['Heading', 'H1', 3], ['Heading', 'H1 Bold', 3, true],
+  ['Heading', 'H2', 2], ['Heading', 'H2 Bold', 2, true],
+  ['Heading', 'H3', 1], ['Heading', 'H3 Bold', 1, true],
+  ['Heading', 'H4', 0], ['Heading', 'H4 Bold', 0, true],
+  ['Heading', 'H5', -1], ['Heading', 'H5 Bold', -1, true],
+  ['Heading', 'H6', -2], ['Heading', 'H6 Bold', -2, true],
+  ['Body', 'Lg', 1], ['Body', 'Lg Bold', 1, true],
+  ['Body', 'Md', 0], ['Body', 'Md Bold', 0, true],
+  ['Body', 'Sm', -1], ['Body', 'Sm Bold', -1, true],
+  ['Label', 'Lg', 0], ['Label', 'Lg Bold', 0, true],
+  ['Label', 'Md', -1], ['Label', 'Md Bold', -1, true],
+  ['Label', 'Sm', -2], ['Label', 'Sm Bold', -2, true],
+  ['Caption', 'Md', -1], ['Caption', 'Sm', -2],
+  ['Eyebrow', 'Md', -1, true, { transform: 'uppercase', ls: 0.08 }],
+  ['Eyebrow', 'Sm', -2, true, { transform: 'uppercase', ls: 0.08 }],
+  ['Link', 'Lg', 1, false, { underline: true }],
+  ['Link', 'Md', 0, false, { underline: true }],
+  ['Link', 'Sm', -1, false, { underline: true }],
+  ['Code', 'Md', -1], ['Code', 'Sm', -2]
+];
+
+const FONT_ROLE = { Display: 'display', Heading: 'heading', Code: 'code' };
+const FONT_VAR = { display: '--font-display', heading: '--font-heading', body: '--font-body', code: '--font-code' };
+const fontStack = role => $('font' + role[0].toUpperCase() + role.slice(1)).value;
+
+function fluid(size) {
+  const rem = v => fx(v / 16) + 'rem';
+  if (!$('fluidOn').checked) return size + 'px';
+  const base = num('base', 16);
+  const vMin = num('vMin', 375), vMax = num('vMax', 1280);
+  const shrink = Math.min(0.9, Math.max(0, num('shrink', 40) / 100));
+  const min = size > base ? fx(size - (size - base) * shrink) : size;
+  if (min >= size || vMax <= vMin) return rem(size);
+  const slope = (size - min) / (vMax - vMin);
+  const inter = min - slope * vMin;
+  return `clamp(${rem(min)}, ${rem(inter)} + ${fx(slope * 100)}vw, ${rem(size)})`;
+}
+
+let lastItems = [];
+let lastCss = '';
+
+const WEIGHT_STYLES = {
+  100: ['Thin'], 200: ['ExtraLight', 'Extra Light'], 300: ['Light'], 400: ['Regular'],
+  500: ['Medium'], 600: ['SemiBold', 'Semi Bold'], 700: ['Bold'],
+  800: ['ExtraBold', 'Extra Bold'], 900: ['Black']
+};
+const familyName = role => fontStack(role).split(',')[0].replace(/['"]/g, '').trim();
+const round = (n) => fx(n);
+
+function buildExport(fmt) {
+  const items = lastItems;
+  if (fmt === 'css-classes') return lastCss;
+
+  if (fmt === 'md-table') {
+    const rows = items.map(t =>
+      `| ${t.token} | ${familyName(t.role)} | ${t.size} | ${t.lh} | ${fx(t.ls * 100)} | ${t.weight} |`);
+    return ['Add these to text styles', '',
+      '| Token | Font | Size | Line height | Letter spacing | Weight |',
+      '| --- | --- | --- | --- | --- | --- |', ...rows].join('\n');
+  }
+
+  if (fmt === 'css-vars') {
+    const fonts = Object.entries(FONT_VAR).map(([r, v]) => `  ${v}: ${fontStack(r)};`).join('\n');
+    const tokens = items.map(t => {
+      const n = '--' + t.token.replace('/', '-');
+      return [
+        `  /* ${t.token} */`,
+        `  ${n}-font: var(${FONT_VAR[t.role]});`,
+        `  ${n}-size: ${fluid(t.size)};`,
+        `  ${n}-weight: ${t.weight};`,
+        `  ${n}-line-height: ${t.lh};`,
+        `  ${n}-letter-spacing: ${t.ls}em;`
+      ].join('\n');
+    }).join('\n\n');
+    return `:root {\n${fonts}\n\n${tokens}\n}`;
+  }
+
+  if (fmt === 'figma-vars') {
+    const fonts = {};
+    Object.keys(FONT_VAR).forEach(r => { fonts[r] = familyName(r); });
+    const data = items.map(t => ({
+      name: t.token,
+      family: familyName(t.role),
+      size: t.size,
+      weight: t.weight,
+      lineHeight: round(t.size * t.lh, 2),
+      letterSpacing: round(t.size * t.ls, 2)
+    }));
+    return `// Figma: Plugins > Development > New plugin... > Run once (Figma desktop or browser).
+// Creates a "Typography" variable collection. Sizes, line heights and letter spacing are in px.
+const fonts = ${JSON.stringify(fonts, null, 2)};
+const tokens = ${JSON.stringify(data, null, 2)};
+
+const collection = figma.variables.createVariableCollection('Typography');
+const mode = collection.defaultModeId;
+const add = (name, type, value) => {
+  const v = figma.variables.createVariable(name, collection, type);
+  v.setValueForMode(mode, value);
+};
+
+for (const [role, family] of Object.entries(fonts)) add('font-family/' + role, 'STRING', family);
+for (const t of tokens) {
+  add(t.name + '/font-family', 'STRING', t.family);
+  add(t.name + '/font-size', 'FLOAT', t.size);
+  add(t.name + '/font-weight', 'FLOAT', t.weight);
+  add(t.name + '/line-height', 'FLOAT', t.lineHeight);
+  add(t.name + '/letter-spacing', 'FLOAT', t.letterSpacing);
+}
+figma.closePlugin('Created ' + tokens.length + ' typography tokens');`;
+  }
+
+  const data = items.map(t => {
+    const o = {
+      name: t.token,
+      family: familyName(t.role),
+      styles: WEIGHT_STYLES[t.weight] || ['Regular'],
+      size: t.size,
+      lineHeight: round(t.lh * 100, 1),
+      letterSpacing: round(t.ls * 100, 2)
+    };
+    if (t.transform === 'uppercase') o.textCase = 'UPPER';
+    if (t.underline) o.textDecoration = 'UNDERLINE';
+    return o;
+  });
+  return `// Figma: Plugins > Development > New plugin... > Run once (Figma desktop or browser).
+// Creates one text style per token. Fonts must be available in Figma.
+const styles = ${JSON.stringify(data, null, 2)};
+
+async function loadFont(family, names) {
+  for (const style of names) {
+    try { await figma.loadFontAsync({ family, style }); return style; } catch (e) {}
+  }
+  throw new Error('Font not available: ' + family + ' ' + names[0]);
+}
+
+(async () => {
+  for (const s of styles) {
+    const style = await loadFont(s.family, s.styles);
+    const t = figma.createTextStyle();
+    t.name = s.name;
+    t.fontName = { family: s.family, style };
+    t.fontSize = s.size;
+    t.lineHeight = { unit: 'PERCENT', value: s.lineHeight };
+    t.letterSpacing = { unit: 'PERCENT', value: s.letterSpacing };
+    if (s.textCase) t.textCase = s.textCase;
+    if (s.textDecoration) t.textDecoration = s.textDecoration;
+  }
+  figma.closePlugin('Created ' + styles.length + ' text styles');
+})();`;
+}
+
+function updateExport() {
+  $('css').textContent = buildExport($('exportFmt').value);
+}
+
+function renderNamed(steps, weight) {
+  const byK = new Map(steps.map(s => [s.k, s]));
+  const body = $('named');
+  body.textContent = '';
+  const cssParts = [];
+  const items = [];
+  let group = '';
+
+  for (const [g, name, k, bold, opt = {}] of STYLES) {
+    if (g !== group) {
+      group = g;
+      const hr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 7;
+      td.className = 'group';
+      td.textContent = g;
+      hr.appendChild(td);
+      body.appendChild(hr);
+    }
+
+    const s = byK.get(k);
+    const w = bold ? $('boldWeight').value : weight;
+    const role = FONT_ROLE[g] || 'body';
+    const token = (g + '/' + name).toLowerCase().replace(/\s+/g, '-');
+    const lsv = s ? fx(s.ls + (opt.ls || 0)) : 0;
+    const tr = document.createElement('tr');
+    const cells = s
+      ? [token, role, s.size + ' px', String(s.lh), lsv + ' em', w]
+      : [token, role, '—', '—', '—', w];
+    const TYPE_LABELS = ['', 'Font', 'px', 'Line height', 'Letter spacing', 'Weight'];
+    cells.forEach((t, i) => {
+      const td = document.createElement('td');
+      td.textContent = t;
+      td.dataset.l = TYPE_LABELS[i];
+      tr.appendChild(td);
+    });
+
+    const pv = document.createElement('td');
+    const span = document.createElement('span');
+    span.className = 'preview';
+    span.textContent = $('previewText').value || 'Aa';
+    if (s) {
+      span.style.fontSize = s.size + 'px';
+      span.style.lineHeight = String(s.lh);
+      span.style.letterSpacing = lsv + 'em';
+    }
+    span.style.fontFamily = fontStack(role);
+    if (opt.transform) span.style.textTransform = opt.transform;
+    if (opt.underline) { span.style.textDecoration = 'underline'; span.style.color = 'var(--accent)'; }
+    span.style.fontWeight = w;
+    pv.appendChild(span);
+    tr.appendChild(pv);
+    body.appendChild(tr);
+
+    const cls = '.type-' + token.replace('/', '-');
+    if (s) {
+      const extra = (opt.transform ? `\n  text-transform: ${opt.transform};` : '') + (opt.underline ? '\n  text-decoration: underline;' : '');
+      items.push({ token, role, size: s.size, lh: s.lh, ls: lsv, weight: +w,
+        transform: opt.transform || '', underline: !!opt.underline });
+      cssParts.push(`${cls} {\n  font-family: var(${FONT_VAR[role]});\n  font-size: ${fluid(s.size)};\n  line-height: ${s.lh};\n  letter-spacing: ${lsv}em;\n  font-weight: ${w};${extra}\n}`);
+    } else {
+      cssParts.push(`/* ${token}: no step ${k} in scale */`);
+    }
+  }
+
+  const vars = Object.entries(FONT_VAR).map(([r, v]) => `  ${v}: ${fontStack(r)};`).join('\n');
+  lastItems = items;
+  lastCss = `:root {\n${vars}\n}\n\n` + cssParts.join('\n\n');
+  updateExport();
+}
+
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+
+$('preset').addEventListener('change', e => {
+  if (e.target.value) $('scale').value = e.target.value;
+  render();
+});
+$('scale').addEventListener('input', () => { $('preset').value = ''; });
+
+$('copy').addEventListener('click', async () => {
+  const text = $('css').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('status').textContent = 'Copied';
+  } catch (err) {
+    const range = document.createRange();
+    range.selectNodeContents($('css'));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    $('status').textContent = 'Copy blocked, text selected';
+  }
+});
+
+// Collapsible sections: sidebar groups hide their fields, output sections hide their table.
+document.querySelectorAll('.group > h2').forEach(h => {
+  const isGroup = h.parentElement.classList.contains('group');
+  h.dataset.toggle = '';
+  h.setAttribute('role', 'button');
+  h.setAttribute('aria-expanded', 'true');
+  h.tabIndex = 0;
+  const setOpen = open => {
+    h.setAttribute('aria-expanded', String(open));
+    const targets = isGroup
+      ? [...h.parentElement.children].filter(c => c !== h)
+      : [h.nextElementSibling];
+    targets.forEach(t => { t.hidden = !open; });
+  };
+  h.addEventListener('click', () => setOpen(h.getAttribute('aria-expanded') !== 'true'));
+  h.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setOpen(h.getAttribute('aria-expanded') !== 'true');
+    }
+  });
+});
+
+// On narrow screens the results come first, so start with the settings folded except Base.
+// These groups are folded by default everywhere.
+const FOLDED = ['Font family', 'Fluid (CSS clamp)', 'Steps', 'Line height', 'Letter spacing (em)'];
+const narrow = window.matchMedia('(max-width: 900px)').matches;
+document.querySelectorAll('.group > h2').forEach(h => {
+  if (FOLDED.includes(h.textContent) || (narrow && h.textContent !== 'Base')) h.click();
+});
+
+document.querySelectorAll('.tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x =>
+      x.setAttribute('aria-selected', String(x === b)));
+    $('view-typography').hidden = b.dataset.view !== 'typography';
+    $('view-scale').hidden = b.dataset.view !== 'scale';
+  });
+});
+
+render();
+</script>
+</body>
+</html>
+
+</body></html>
