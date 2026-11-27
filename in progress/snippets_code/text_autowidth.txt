@@ -1,0 +1,43 @@
+(async () => {
+  const textNodes = new Set();
+
+  for (const node of figma.currentPage.selection) {
+    if (node.type === 'TEXT') {
+      textNodes.add(node);
+    } else if ('findAllWithCriteria' in node) {
+      node.findAllWithCriteria({ types: ['TEXT'] }).forEach(t => textNodes.add(t));
+    }
+  }
+
+  console.log(`Found ${textNodes.size} text layer(s).`);
+
+  for (const node of textNodes) {
+    try {
+      // Load all fonts (handles both single and mixed fonts)
+      const fonts = node.getRangeAllFontNames(0, node.characters.length);
+      for (const font of fonts) {
+        await figma.loadFontAsync(font);
+      }
+
+      const originalHeight = node.height;
+
+      // Measure auto-width
+      node.textAutoResize = 'WIDTH_AND_HEIGHT';
+      const fittedWidth = node.width;
+
+      // Lock to fitted width + original height
+      node.textAutoResize = 'NONE';
+      node.resize(fittedWidth, originalHeight);
+
+      // Ensure Auto Layout doesn't force it back to Fill
+      if (node.parent && 'layoutMode' in node.parent && node.parent.layoutMode !== 'NONE') {
+        node.layoutSizingHorizontal = 'FIXED';
+        node.layoutSizingVertical = 'FIXED';
+      }
+
+      console.log(`Updated: "${node.name}" -> ${Math.round(fittedWidth)}x${Math.round(originalHeight)}`);
+    } catch (err) {
+      console.error(`Failed on "${node.name}":`, err);
+    }
+  }
+})();

@@ -4,11 +4,14 @@ description: Generate Figma designs from project rules. This skill auto-starts w
 original-author: sven hero kaufmann
 contributor:
   - theodore galve
-version: 1.7
+version: 1.8
 ---
 
 ### Open this
-- `file_made/PROJECT-SETTTING.md` — Project variables (e.g. repeat value). Check current settings before generating.
+- `.agents/structure/project-settings/SKILL.md` — Project viewport and screen-size settings.
+- `FIGMA SETTINGS.md` — Figma file and default page settings.
+
+Check both settings files before generating.
 
 ---
 

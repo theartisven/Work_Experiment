@@ -1,569 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body class="shade-page">
 <title>Shade Generator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 
-<style>
-/* Layout: header · stacked color entries (picker, prefix, ramp) · export card */
-/* Notion-style palette: white page, warm grays, hairline borders, one blue accent */
-:root {
-  --bg:     #ffffff;
-  --bg2:    #ffffff;
-  --bg3:    #f7f6f3;
-  --fg:     #37352f;
-  --fg2:    #5f5e5b;
-  --fg3:    #91918e;
-  --fg4:    #b4b4b0;
-  --border: #e9e9e7;
-  --accent: #2383e2;
-  --radius: 6px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg:     #191919;
-    --bg2:    #202020;
-    --bg3:    #2f2f2f;
-    --fg:     #e6e6e6;
-    --fg2:    #b4b4b4;
-    --fg3:    #7f7f7f;
-    --fg4:    #5a5a5a;
-    --border: #2f2f2f;
-    --accent: #529cca;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg:     #191919;
-  --bg2:    #202020;
-  --bg3:    #2f2f2f;
-  --fg:     #e6e6e6;
-  --fg2:    #b4b4b4;
-  --fg3:    #7f7f7f;
-  --fg4:    #5a5a5a;
-  --border: #2f2f2f;
-  --accent: #529cca;
-  color-scheme: dark;
-}
 
-*, *::before, *::after { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  padding-block: 36px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-
-.app {
-  max-width: 920px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 0;
-}
-
-/* Header */
-.header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.badge {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--fg4);
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  padding: 2px 9px;
-  border-radius: 20px;
-  letter-spacing: 0.04em;
-}
-
-/* Entries (one per color) */
-#entries { display: flex; flex-direction: column; gap: 14px; }
-
-.entry {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.entry-controls {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: flex-end;
-}
-
-.field { display: flex; flex-direction: column; gap: 6px; }
-
-.field-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fg4);
-}
-
-.color-row {
-  display: flex;
-  align-items: stretch;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  overflow: hidden;
-  height: 42px;
-  transition: border-color 0.15s;
-}
-.color-row:focus-within,
-.prefix-input:focus,
-.hex-text:focus { border-color: var(--accent); outline: none; }
-
-input[type="color"] {
-  width: 48px;
-  height: 100%;
-  border: none;
-  outline: none;
-  padding: 5px 6px;
-  background: none;
-  cursor: pointer;
-  border-right: 1px solid var(--border);
-  display: block;
-}
-input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
-
-.hex-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--fg);
-  padding: 0 12px;
-  width: 108px;
-  letter-spacing: 0.04em;
-  min-width: 0;
-}
-
-.prefix-input {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--fg);
-  padding: 0 12px;
-  width: 180px;
-  max-width: 100%;
-  height: 42px;
-  letter-spacing: 0.04em;
-  transition: border-color 0.15s;
-}
-
-.remove-btn {
-  height: 42px;
-  width: 42px;
-  font-size: 18px;
-  line-height: 1;
-  color: var(--fg3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
-}
-.remove-btn:hover { color: var(--fg); border-color: var(--fg4); }
-.remove-btn:disabled { opacity: 0.4; cursor: default; }
-
-.toggles { display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; padding-bottom: 2px; }
-.switch { position: relative; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--fg2); cursor: pointer; user-select: none; white-space: nowrap; }
-.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
-.track { position: relative; width: 30px; height: 18px; flex-shrink: 0; border-radius: 18px; background: var(--bg3); border: 1px solid var(--border); transition: background 0.15s, border-color 0.15s; }
-.track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--fg4); transition: transform 0.15s, background 0.15s; }
-.switch input:checked + .track { background: var(--accent); border-color: var(--accent); }
-.switch input:checked + .track::after { transform: translateX(12px); background: #fff; }
-.switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.add-btn {
-  align-self: flex-start;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--fg2);
-  background: var(--bg2);
-  border: 1px dashed var(--fg4);
-  border-radius: var(--radius);
-  padding: 9px 16px;
-  cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
-}
-.add-btn:hover { color: var(--fg); border-color: var(--accent); }
-
-/* Dark variant card */
-.variant-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 0;
-}
-.variant-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.variant-title { font-size: 13px; font-weight: 600; color: var(--fg); }
-.variant-sub { font-size: 12px; color: var(--fg3); }
-.sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 24px; }
-.sliders.off { opacity: 0.5; }
-.slider-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; color: var(--fg2); }
-.slider-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--fg);
-  font-variant-numeric: tabular-nums;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--bg3);
-  cursor: ew-resize;
-  touch-action: none;
-  user-select: none;
-}
-.slider-val:hover { border: 1px solid var(--border); padding: 0 5px; }
-.slider-track-wrap { position: relative; }
-.slider-center-tick {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 2px;
-  height: 10px;
-  background: var(--bg2);
-  border-radius: 1px;
-  pointer-events: none;
-  opacity: 0.8;
-  z-index: 1;
-}
-.slider-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg4); margin-top: 4px; }
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 22px;
-  margin: 0;
-  background: transparent;
-  cursor: pointer;
-  touch-action: pan-x;
-}
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 6px;
-  background:
-    linear-gradient(to right, var(--bg3) var(--a, 50%), var(--accent) var(--a, 50%), var(--accent) var(--b, 50%), var(--bg3) var(--b, 50%));
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-top: -7px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 3px solid var(--bg2);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.30);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 1px 6px rgba(0,0,0,0.35); }
-input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); box-shadow: 0 2px 8px rgba(0,0,0,0.40); }
-input[type="range"]::-moz-range-track { height: 6px; border-radius: 6px; background: var(--bg3); }
-input[type="range"]::-moz-range-progress { height: 6px; border-radius: 6px; background: var(--accent); }
-input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg2); box-shadow: 0 1px 4px rgba(0,0,0,0.30); }
-input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-/* Keyboard focus: one visible ring for every control */
-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* Ramp */
-.ramp-wrap {
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-.ramp { display: flex; height: 120px; }
-
-.ramp-cell {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  cursor: pointer;
-  transition: flex 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), transform 100ms ease-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-.ramp-cell:hover { flex: 1.6; }
-.ramp-cell:active { transform: scale(0.98); }
-
-.ramp-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-size: 10px;
-  line-height: 1.3;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-  opacity: 0;
-  transition: opacity 0.15s;
-  pointer-events: none;
-  white-space: nowrap;
-}
-.ramp-cell:hover .ramp-label,
-.ramp-cell:focus-visible .ramp-label { opacity: 1; }
-.ramp-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; z-index: 1; }
-
-.ramp-hint {
-  font-size: 11px;
-  color: var(--fg4);
-  margin: 0;
-}
-
-/* Start / end hex inputs for a custom range */
-.range-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
-.hex-text::placeholder { color: var(--fg4); }
-.range-reset {
-  height: 42px;
-  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-  color: var(--fg3); background: var(--bg);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 0 14px; cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
-}
-.range-reset:hover { color: var(--fg); border-color: var(--fg4); }
-
-/* Start / end hex chips above each ramp */
-.ramp-ends { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.end-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: 'Inter', sans-serif; font-size: 12px; color: var(--fg2);
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 3px 9px 3px 4px; cursor: pointer;
-  transition: border-color 0.12s;
-}
-.end-chip:hover { border-color: var(--accent); }
-.end-chip i { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.12); display: inline-block; }
-.end-chip b { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--fg); }
-.end-arrow { font-size: 12px; color: var(--fg4); }
-
-/* Ramp type selector */
-.segmented {
-  display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px;
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
-  align-self: flex-start;
-}
-.seg-btn {
-  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
-  color: var(--fg3); background: none; border: none; border-radius: 6px;
-  padding: 5px 12px; cursor: pointer;
-  transition: color 0.12s, background 0.12s;
-}
-.seg-btn:hover { color: var(--fg2); }
-.seg-btn.active { color: var(--fg); background: var(--bg2); box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
-/* Press feedback lands on pointer-down, not on release */
-.seg-btn:active, .end-chip:active, .range-reset:active, .tab-btn:active { transform: scale(0.97); transition: transform 100ms ease-out; }
-
-.empty {
-  font-size: 13px;
-  color: var(--fg3);
-  padding: 24px;
-  text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-}
-
-/* Export card */
-.code-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.code-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--border);
-}
-
-.tab-btn {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--fg4);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 10px 14px 8px;
-  cursor: pointer;
-  margin-bottom: -1px;
-  transition: color 0.12s, border-color 0.12s;
-  font-family: 'Inter', sans-serif;
-}
-.tab-btn:hover { color: var(--fg2); }
-.tab-btn.active { color: var(--fg); border-bottom-color: var(--accent); }
-
-.code-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.copy-all-btn {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--fg3);
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 4px 11px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-}
-.copy-all-btn:hover { color: var(--fg); }
-
-pre {
-  margin: 0;
-  padding: 16px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  line-height: 1.8;
-  color: var(--fg2);
-  overflow-x: auto;
-  min-width: 0;
-  max-height: 420px;
-}
-
-.add-btn:active,
-.copy-all-btn:active,
-.remove-btn:active { transform: scale(0.97); transition: transform 100ms ease-out; }
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(70px);
-  background: var(--fg);
-  color: var(--bg);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 7px 18px;
-  border-radius: 20px;
-  pointer-events: none;
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 999;
-  white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* Layout pass: tighter header, per-color card header, copy action in the tab bar, phone stacking */
-.app { max-width: 980px; gap: 24px; }
-.header { flex-direction: column; align-items: flex-start; gap: 6px; }
-.header h1 { font-size: 22px; }
-.page-sub { margin: 0; font-size: 13px; color: var(--fg3); }
-#entries { gap: 16px; }
-.entry { padding: 16px; gap: 16px; }
-.entry-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.entry-title { font-size: 13px; font-weight: 600; color: var(--fg2); }
-.entry-controls { gap: 16px 20px; align-items: flex-end; }
-.toggles { padding-bottom: 0; }
-.ramp { height: 112px; }
-.ramp-ends { justify-content: flex-start; }
-.code-tabs { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px; }
-.code-tabs .copy-all-btn { margin-left: auto; }
-@media (max-width: 640px) {
-  body { padding-block: 24px 48px; }
-  .header h1 { font-size: 20px; }
-  .entry-controls > .field { width: 100%; }
-  .prefix-input { width: 100%; }
-  .range-row > .field { flex: 1 1 100%; }
-  .range-reset { width: 100%; }
-  .toggles { width: 100%; }
-  .ramp { height: 88px; }
-}
-
-/* Compact pass: tighter paddings, 36px controls, shorter ramps */
-body { padding-block: 20px 40px; }
-.app { gap: 14px; }
-.header { gap: 4px; }
-.header h1 { font-size: 20px; }
-.variant-card { padding: 12px; gap: 10px; }
-.variant-head { gap: 8px; }
-.sliders { gap: 10px 20px; }
-.slider-head { margin-bottom: 4px; }
-#entries { gap: 10px; }
-.entry { padding: 12px; gap: 10px; }
-.entry-controls { gap: 12px 14px; }
-.toggles { gap: 6px; }
-.color-row, .prefix-input, .remove-btn, .range-reset { height: 36px; }
-.remove-btn { width: 36px; }
-input[type="color"] { width: 40px; }
-.hex-text { width: 96px; }
-.prefix-input { width: 150px; }
-.range-row { gap: 10px; }
-.ramp { height: 84px; }
-.md-fields { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); }
-.md-fields .prefix-input { width: 200px; max-width: 100%; }
-.ramp-ends { gap: 6px; }
-.end-chip { padding: 2px 8px 2px 4px; }
-.code-tabs { padding: 0 6px; }
-.tab-btn { padding: 6px 10px 5px; }
-.code-tabs .copy-all-btn { padding: 3px 9px; }
-pre { padding: 10px 12px; }
-.empty { padding: 16px; }
-@media (max-width: 640px) {
-  .prefix-input { width: 100%; }
-}
-
-/* Reference layout: two-card top row, one-line color rows, ramp footer */
-.top-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: start; }
-.side-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.side-col .add-btn { align-self: stretch; margin-left: 0; text-align: center; padding: 9px 12px; border: 1px dashed var(--fg4); background: var(--bg2); }
-.entry-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
-.entry-id { display: flex; flex-direction: column; gap: 6px; margin-right: 4px; }
-.entry-row .color-row, .entry-row .prefix-input { width: 150px; }
-.ramp-ends { display: none; }
-.ramp-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ramp-foot .range-reset { height: 28px; padding: 0 10px; font-size: 12px; }
-@media (max-width: 880px) { .top-grid { grid-template-columns: 1fr; } }
-@media (max-width: 640px) {
-  .entry-row .field, .entry-row .entry-id { width: 100%; }
-  .entry-row .color-row, .entry-row .prefix-input { width: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ramp-cell, .track, .track::after, .add-btn, .copy-all-btn, .remove-btn, .seg-btn, .end-chip, .range-reset, .tab-btn { transition: none; }
-  .ramp-cell:active, .add-btn:active, .copy-all-btn:active, .remove-btn:active, .seg-btn:active, .end-chip:active, .range-reset:active, .tab-btn:active { transform: none; }
-  .toast { transform: translateX(-50%); opacity: 0; transition: opacity 0.2s ease; }
-  .toast.show { opacity: 1; transform: translateX(-50%); }
-}
-</style>
+<link rel="stylesheet" href="style.css">
 
 <div class="app">
   <div class="header">
@@ -628,10 +69,11 @@ pre { padding: 10px 12px; }
       <button class="tab-btn" data-tab="css">CSS Variables</button>
       <button class="tab-btn" data-tab="js">JS Object</button>
       <button class="tab-btn" data-tab="oklch">OKLCH</button>
-      <button class="tab-btn active" data-tab="md">Markdown Table</button>
+      <button class="tab-btn" data-tab="md">Markdown Table</button>
+      <button class="tab-btn active" data-tab="figma-mcp">Figma MCP</button>
       <button class="copy-all-btn" id="copyAll">Copy all</button>
     </div>
-    <div class="md-fields" id="mdFields" hidden>
+    <div class="md-fields" id="mdFields">
       <label class="field">
         <span class="field-label">Variable collection</span>
         <input type="text" class="prefix-input" id="varColl" value="Primitive" spellcheck="false">
@@ -835,7 +277,7 @@ function darkOpts() {
 
 let uid = 0;
 const palettes = [];
-let tab = 'md';
+let tab = 'figma-mcp';
 let rampMode = 'tailwind'; // tailwind | mix | tints | shades | tones
 
 function addPalette(hex = '#6366f1', prefix = 'brand') {
@@ -989,10 +431,13 @@ function renderEnds(el, shades) {
   if (!shades) return;
   const first = shades[0], last = shades[shades.length - 1];
   box.innerHTML = `
-    <button class="end-chip" data-hex="${first.hex}"><i style="background:${first.hex}"></i>Start (${first.shade}) <b>${first.hex}</b></button>
+    <button class="end-chip" data-hex="${first.hex}"><i class="end-chip-swatch"></i>Start (${first.shade}) <b>${first.hex}</b></button>
     <span class="end-arrow">→</span>
-    <button class="end-chip" data-hex="${last.hex}"><i style="background:${last.hex}"></i>End (${last.shade}) <b>${last.hex}</b></button>`;
-  box.querySelectorAll('.end-chip').forEach(b => b.addEventListener('click', () => copy(b.dataset.hex, `Copied ${b.dataset.hex}`)));
+    <button class="end-chip" data-hex="${last.hex}"><i class="end-chip-swatch"></i>End (${last.shade}) <b>${last.hex}</b></button>`;
+  box.querySelectorAll('.end-chip').forEach((b, index) => {
+    b.querySelector('.end-chip-swatch').style.background = index === 0 ? first.hex : last.hex;
+    b.addEventListener('click', () => copy(b.dataset.hex, `Copied ${b.dataset.hex}`));
+  });
 }
 
 function renderRamp(el, p) {
@@ -1008,7 +453,8 @@ function renderRamp(el, p) {
     const cw = contrastRatio(s.hex, '#ffffff');
     const cb = contrastRatio(s.hex, '#000000');
     cell.title = `${s.name} · ${s.hex} · ${cw.toFixed(2)}:1 on white · ${cb.toFixed(2)}:1 on black`;
-    cell.innerHTML = `<span class="ramp-label" style="color:${contrastText(s.hex)}"><b>${s.shade}</b><span>${s.hex}</span></span>`;
+    cell.innerHTML = `<span class="ramp-label"><b>${s.shade}</b><span>${s.hex}</span></span>`;
+    cell.querySelector('.ramp-label').style.color = contrastText(s.hex);
     // Keyboard users can reach and activate every shade, same as a pointer
     cell.tabIndex = 0;
     cell.setAttribute('role', 'button');
@@ -1044,7 +490,7 @@ function renderEntries() {
 // ── Export ─────────────────────────────────────────────────────────────────
 function renderCode() {
   const out = document.getElementById('codeOut');
-  document.getElementById('mdFields').hidden = tab !== 'md';
+  document.getElementById('mdFields').hidden = !(tab === 'md' || tab === 'figma-mcp');
   const sets = allPalettes();
   if (sets.length === 0) { out.textContent = '/* Add a color to generate shades */'; return; }
 
@@ -1060,6 +506,58 @@ function renderCode() {
     out.textContent = ':root {\n' + sets.flatMap(p =>
       p.shades.map(s => `  --${s.name}: oklch(${(s.L * 100).toFixed(2)}% ${s.C.toFixed(4)} ${s.H.toFixed(2)});`)
     ).join('\n') + '\n}';
+  } else if (tab === 'figma-mcp') {
+    const coll = document.getElementById('varColl').value.trim() || 'Primitive';
+    const parent = document.getElementById('parentIn').value.trim();
+    // Build the name list: {Parent}/{Prefix}/{Shade}, empty parts skipped
+    const entries = sets.flatMap(p => {
+      const pre = p.prefix.trim() || 'brand';
+      return p.shades.map(s => ({
+        name: [parent, pre, s.shade].filter(Boolean).join('/'),
+        hex: s.hex
+      }));
+    });
+    out.textContent =
+`// Figma Console MCP \u2014 run with figma_execute
+// Creates one COLOR variable per shade inside "${coll}".
+// Variables are grouped by name: "${parent ? parent + '/' : ''}<prefix>/<shade>".
+// Safe to re-run: names that already exist are skipped.
+
+const COLLECTION_NAME = ${JSON.stringify(coll)};
+const variables = ${JSON.stringify(entries, null, 2)};
+
+(async () => {
+  let collection = figma.variables.getLocalVariableCollections()
+    .find(c => c.name === COLLECTION_NAME);
+  if (!collection) {
+    collection = figma.variables.createVariableCollection(COLLECTION_NAME);
+  }
+  const modeId = collection.modes[0].modeId;
+
+  const existing = new Set(
+    figma.variables.getLocalVariables('COLOR')
+      .filter(v => v.variableCollectionId === collection.id)
+      .map(v => v.name)
+  );
+
+  let created = 0;
+  for (const v of variables) {
+    if (existing.has(v.name)) continue;
+    const h = v.hex.replace('#', '');
+    const color = {
+      r: parseInt(h.slice(0, 2), 16) / 255,
+      g: parseInt(h.slice(2, 4), 16) / 255,
+      b: parseInt(h.slice(4, 6), 16) / 255,
+      a: 1
+    };
+    const variable = figma.variables.createVariable(v.name, collection, 'COLOR');
+    variable.setValueForMode(modeId, color);
+    created++;
+  }
+
+  figma.notify('Created ' + created + ' of ' + variables.length + ' color variables');
+  return { created, total: variables.length, collection: COLLECTION_NAME };
+})();`;
   } else {
     // Name = {Parent}/{Prefix}/{Number}; empty parts are skipped
     const coll = document.getElementById('varColl').value.trim() || 'Variables';

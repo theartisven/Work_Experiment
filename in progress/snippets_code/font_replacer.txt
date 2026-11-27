@@ -1,0 +1,120 @@
+(async () => {
+  // 1. Find all text nodes in selection (falls back to entire page if nothing is selected)
+  const roots = figma.currentPage.selection.length > 0 
+    ? figma.currentPage.selection 
+    : [figma.currentPage];
+
+  const textNodes = [];
+  for (const root of roots) {
+    if (root.type === 'TEXT') textNodes.push(root);
+    if ('findAllWithCriteria' in root) {
+      textNodes.push(...root.findAllWithCriteria({ types: ['TEXT'] }));
+    }
+  }
+
+  if (textNodes.length === 0) {
+    figma.notify('No text layers found.');
+    return;
+  }
+
+  // 2. Collect unique fonts currently in use
+  const usedFontsMap = new Map();
+  for (const node of textNodes) {
+    const fonts = node.getRangeAllFontNames(0, node.characters.length);
+    for (const f of fonts) {
+      const key = `${f.family}::${f.style}`;
+      if (!usedFontsMap.has(key)) usedFontsMap.set(key, f);
+    }
+  }
+  const usedFonts = Array.from(usedFontsMap.values());
+
+  // 3. Get all available fonts in Figma for the replacement dropdown
+  const availableFonts = await figma.listFontsAsync();
+  const families = [...new Set(availableFonts.map(f => f.fontName.family))].sort();
+
+  // 4. Create the UI
+  const html = `
+    <style>
+      body { font-family: Inter, sans-serif; font-size: 12px; padding: 12px; margin: 0; color: #333; }
+      label { display: block; font-weight: 600; margin-top: 10px; margin-bottom: 4px; }
+      select, button { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px; }
+      button { background: #18A0FB; color: white; border: none; font-weight: 600; margin-top: 16px; cursor: pointer; }
+      button:hover { background: #0D8CE0; }
+    </style>
+    <div>
+      <label>Current Font (${usedFonts.length} found)</label>
+      <select id="fromFont">
+        ${usedFonts.map((f, i) => `<option value="${i}">${f.family} — ${f.style}</option>`).join('')}
+      </select>
+
+      <label>Replace With Family</label>
+      <select id="toFamily">
+        ${families.map(fam => `<option value="${fam}">${fam}</option>`).join('')}
+      </select>
+
+      <label>Replace With Style</label>
+      <select id="toStyle"></select>
+
+      <button id="replaceBtn">Replace Font</button>
+    </div>
+
+    <script>
+      const usedFonts = ${JSON.stringify(usedFonts)};
+      const available = ${JSON.stringify(availableFonts.map(f => f.fontName))};
+      
+      const fromSelect = document.getElementById('fromFont');
+      const famSelect = document.getElementById('toFamily');
+      const styleSelect = document.getElementById('toStyle');
+
+      function updateStyles() {
+        const chosenFam = famSelect.value;
+        const currentStyle = usedFonts[fromSelect.value]?.style;
+        const styles = available.filter(f => f.family === chosenFam).map(f => f.style);
+        
+        styleSelect.innerHTML = styles.map(s => 
+          \`<option value="\${s}" \${s === currentStyle ? 'selected' : ''}>\${s}</option>\`
+        ).join('');
+      }
+
+      famSelect.onchange = updateStyles;
+      fromSelect.onchange = updateStyles;
+      updateStyles();
+
+      document.getElementById('replaceBtn').onclick = () => {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'replace',
+            from: usedFonts[fromSelect.value],
+            to: { family: famSelect.value, style: styleSelect.value }
+          }
+        }, '*');
+      };
+    </script>
+  `;
+
+  figma.showUI(html, { width: 280, height: 250, title: 'Font Replacer' });
+
+  // 5. Handle replacement when button is clicked
+  figma.ui.onmessage = async (msg) => {
+    if (msg.type === 'replace') {
+      await figma.loadFontAsync(msg.to);
+      let count = 0;
+
+      for (const node of textNodes) {
+        const len = node.characters.length;
+        if (len === 0) continue;
+
+        // Replace character-by-character range to preserve mixed styles
+        for (let i = 0; i < len; i++) {
+          const charFont = node.getRangeFontName(i, i + 1);
+          if (charFont.family === msg.from.family && charFont.style === msg.from.style) {
+            node.setRangeFontName(i, i + 1, msg.to);
+          }
+        }
+        count++;
+      }
+
+      figma.notify(\`Replaced \${msg.from.family} (\${msg.from.style}) with \${msg.to.family} (\${msg.to.style})\`);
+    }
+  };
+})();

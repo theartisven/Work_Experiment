@@ -1,139 +1,8 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Combination Builder</title>
-<style>
-/* Notion-style page: quiet canvas, large title, hairline dividers, a plain table for combinations, one blue accent. */
-:root{
-  --bg:#ffffff; --fg:#37352f; --muted:#787774; --faint:#b4b4b0;
-  --line:#e9e9e7; --hover:#f1f1ef; --field:#fbfbfa; --accent:#2383e2; --accent-soft:rgba(35,131,226,.09);
-  --focus:#2383e2; --radius:6px;
-  --sans:ui-sans-serif, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
-  --mono:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --faint:#5a5a58;
-    --line:#2f2f2f; --hover:#262626; --field:#1f1f1f; --accent:#529cca; --accent-soft:rgba(82,156,202,.14);
-    --focus:#529cca; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --faint:#5a5a58;
-  --line:#2f2f2f; --hover:#262626; --field:#1f1f1f; --accent:#529cca; --accent-soft:rgba(82,156,202,.14);
-  --focus:#529cca; color-scheme: dark;
-}
-body{
-  margin:0; background:var(--bg); color:var(--fg);
-  font:15px/1.6 var(--sans);
-  padding-left:max(16px, env(safe-area-inset-left, 0px));
-  padding-right:max(16px, env(safe-area-inset-right, 0px));
-  padding-block:48px;
-}
-.page{max-width:900px; margin:0 auto; min-width:0}
-h1{font-size:40px; line-height:1.2; font-weight:700; margin:0 0 6px; letter-spacing:-0.02em; text-wrap:balance}
-.intro{margin:0 0 32px; color:var(--muted); font-size:15px}
-h2{font-size:20px; font-weight:600; line-height:1.3; margin:0; letter-spacing:-0.01em}
-.divider{border:0; border-top:1px solid var(--line); margin:40px 0}
 
-/* Property rows: stacked label and field, hairline between them */
-.props{display:grid; gap:0; margin-bottom:32px}
-.prop{display:grid; grid-template-columns:120px minmax(0,1fr); gap:20px; padding:10px 0; border-bottom:1px solid var(--line); align-items:start}
-.prop:first-child{border-top:1px solid var(--line)}
-.prop-name{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; font-weight:500; letter-spacing:.02em; text-transform:uppercase; padding-top:7px; min-width:0}
-.prop-name label{cursor:default}
-.count{margin-left:auto; font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; white-space:nowrap; text-transform:none; letter-spacing:0; font-weight:400}
-textarea, #in-parent{
-  width:100%; box-sizing:border-box; padding:8px 10px;
-  font:14px/1.6 var(--mono); color:var(--fg); background:var(--field);
-  border:1px solid transparent; border-radius:var(--radius); outline:none;
-  transition:border-color .15s, background .15s;
-}
-textarea{min-height:96px; resize:vertical}
-textarea:hover, #in-parent:hover{background:var(--hover)}
-textarea:focus, #in-parent:focus{border-color:var(--focus); background:var(--bg)}
-textarea:focus-visible, #in-parent:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
-.hint{font-size:13px; color:var(--muted); margin:6px 0 0}
-
-/* Toolbar and buttons: text-first, subtle hover fills */
-.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-bottom:12px}
-.toolbar-title{display:flex; flex-direction:column; gap:2px}
-.actions{display:flex; flex-wrap:wrap; gap:4px; align-items:center}
-.btn{
-  font:inherit; font-size:14px; padding:4px 10px; border-radius:var(--radius); cursor:pointer;
-  border:1px solid transparent; background:transparent; color:var(--muted);
-  transition:background .12s, color .12s; min-height:32px;
-}
-.btn:hover{background:var(--hover); color:var(--fg)}
-.btn.primary{background:var(--accent); color:#fff; border-color:transparent}
-.btn.primary:hover{background:var(--accent); filter:brightness(1.08); color:#fff}
-.btn.small{font-size:13px; padding:0 10px}
-.btn:disabled{opacity:.4; cursor:default; background:transparent}
-.btn:focus-visible, input:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
-
-/* Combination table: flat rows, 40px touch targets, hover fill */
-.table-wrap{overflow-x:auto; min-width:0}
-table.combos{width:100%; border-collapse:collapse; font-size:14px}
-table.combos th{
-  text-align:left; font-size:12px; font-weight:600; color:var(--muted);
-  text-transform:uppercase; letter-spacing:.06em; padding:6px 8px; border-bottom:2px solid var(--line); white-space:nowrap;
-}
-table.combos th.col-check, table.combos th.col-toggle{text-align:center}
-table.combos td{height:40px; padding:4px 8px; border-bottom:1px solid var(--line); vertical-align:middle}
-table.combos tbody tr{transition:background .12s}
-table.combos tbody tr:hover{background:var(--hover)}
-table.combos tr.is-moved{color:var(--muted)}
-td.col-check{width:52px; text-align:center}
-td.col-toggle{width:68px; text-align:center}
-td.text-cell{font:14px/1.5 var(--mono); overflow-wrap:anywhere; min-width:0; padding-left:16px}
-tr.is-struck td.text-cell{text-decoration:line-through; color:var(--muted)}
-td.col-check input{width:18px; height:18px; margin:0; accent-color:var(--accent); cursor:pointer; vertical-align:middle}
-
-/* Toggle switch, sized to a 32px touch area */
-.switch{position:relative; display:inline-block; width:40px; height:32px; vertical-align:middle}
-.switch input{position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; z-index:1}
-.switch .track{position:absolute; left:2px; top:6px; width:36px; height:20px; border-radius:999px; background:var(--accent); transition:background .15s; pointer-events:none}
-.switch .track::after{content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s}
-.switch input:checked + .track{background:#e5484d}
-.switch input:checked + .track::after{transform:translateX(16px)}
-.switch input:focus-visible + .track{outline:2px solid var(--focus); outline-offset:2px}
-
-.empty{margin:12px 0 0; color:var(--muted); font-size:14px}
-
-/* Matrix mode segmented control */
-.seg{display:inline-flex; background:var(--line); border-radius:999px; padding:2px; gap:2px}
-.seg-btn{font:inherit; font-size:13px; padding:3px 14px; border:0; border-radius:999px; background:transparent; color:var(--muted); cursor:pointer; transition:background .12s, color .12s; white-space:nowrap}
-.seg-btn[aria-pressed="true"]{background:var(--bg); color:var(--fg); box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.seg-btn:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
-
-/* Element per State/Type matrix with eye toggles */
-.matrix-wrap{background:var(--field); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
-table.matrix{width:100%; border-collapse:collapse; font-size:14px}
-table.matrix th{text-align:center; font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 12px; border-bottom:2px solid var(--line); white-space:nowrap; background:var(--field)}
-table.matrix th:first-child{text-align:left}
-table.matrix th[scope="row"]{text-align:left; text-transform:none; letter-spacing:0; font-size:13px; font-weight:500; color:var(--fg); font-family:var(--mono); white-space:normal; overflow-wrap:anywhere; padding-left:12px; background:transparent}
-table.matrix td{padding:4px 8px; border-bottom:1px solid var(--line); text-align:center; height:40px}
-table.matrix tbody tr:last-child th, table.matrix tbody tr:last-child td{border-bottom:0}
-.eye{width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:var(--radius); background:transparent; color:var(--faint); cursor:pointer; transition:color .12s, background .12s}
-.eye:hover{background:var(--hover); color:var(--fg)}
-.eye[aria-pressed="true"]{color:var(--accent)}
-.eye:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
-
-/* Markdown export: a code-style block */
-.export textarea{min-height:160px; margin-top:12px; font-size:13px}
-.status{min-height:1.6em; font-size:13px; color:var(--muted); margin:8px 0 0}
-
-/* Summary row beside heading */
-.heading-row{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
-.summary-inline{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
-
-@media (max-width:600px){
-  h1{font-size:28px}
-  .prop{grid-template-columns:1fr; gap:4px}
-  .prop-name{padding-top:0; text-transform:none; letter-spacing:0; font-size:14px}
-  .toolbar{align-items:flex-start}
-}
-</style>
+<link rel="stylesheet" href="style.css">
 
 <main class="page">
   <header>
@@ -271,6 +140,23 @@ table.matrix tbody tr:last-child th, table.matrix tbody tr:last-child td{border-
     <textarea id="md" readonly rows="8" spellcheck="false" placeholder="Add values to build a Markdown list."></textarea>
     <p class="status" id="status" role="status" aria-live="polite"></p>
   </section>
+
+  <hr class="divider">
+
+  <section class="export" aria-labelledby="mcp-title">
+    <div class="toolbar">
+      <div class="toolbar-title">
+        <h2 id="mcp-title">Figma Console MCP</h2>
+        <p class="hint">JavaScript for <code>figma_execute</code>. Creates the collection and one STRING variable per combination.</p>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="copy-mcp-sel" type="button" disabled>Copy MCP export</button>
+        <button class="btn" id="copy-mcp-all" type="button">Copy MCP all</button>
+      </div>
+    </div>
+    <textarea id="mcp" readonly rows="14" spellcheck="false" placeholder="Add values to generate the MCP script."></textarea>
+    <p class="status" id="mcp-status" role="status" aria-live="polite"></p>
+  </section>
 </main>
 
 <script>
@@ -344,6 +230,10 @@ function setStatus(message) {
   $("#status").textContent = message;
 }
 
+function setMcpStatus(message) {
+  $("#mcp-status").textContent = message;
+}
+
 async function copyText(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -372,6 +262,52 @@ function toMarkdown(combos) {
   if (!collection || !headingTemplate) return lines;
   const heading = headingTemplate.replace(/\{collection\}/g, collection);
   return `${heading}\n\n${lines}`;
+}
+
+// Emit a figma_execute script that creates the collection and one STRING variable per combination.
+function toMcpScript(combos) {
+  if (!combos.length) return "";
+  const collection = $("#in-collection").value.trim() || "Variables";
+  const names = combos.map((c) => exportLine(c));
+  const entries = names.map((n) => "    " + JSON.stringify(n) + ",").join("\n");
+  const lines = [
+    "// Combination Builder \u2192 Figma Console MCP",
+    "// Run this with figma_execute.",
+    "",
+    "(function () {",
+    "  const COLLECTION_NAME = " + JSON.stringify(collection) + ";",
+    "",
+    "  let collection = figma.variables.getLocalVariableCollections()",
+    "    .find((c) => c.name === COLLECTION_NAME);",
+    "  if (!collection) {",
+    "    collection = figma.variables.createVariableCollection(COLLECTION_NAME);",
+    "  }",
+    "  const modeId = collection.modes[0].modeId;",
+    "",
+    "  const names = [",
+    entries,
+    "  ];",
+    "",
+    "  const existing = new Set(",
+    "    figma.variables.getLocalVariables()",
+    "      .filter((v) => v.variableCollectionId === collection.id)",
+    "      .map((v) => v.name)",
+    "  );",
+    "",
+    "  let created = 0;",
+    "  for (const name of names) {",
+    "    if (existing.has(name)) continue;",
+    "    const value = name.includes(\"/\") ? name.split(\"/\").slice(1).join(\"/\") : name;",
+    "    const variable = figma.variables.createVariable(name, collection, \"STRING\");",
+    "    variable.setValueForMode(modeId, value);",
+    "    created++;",
+    "  }",
+    "",
+    "  figma.notify(\"Created \" + created + \" of \" + names.length + \" variables in \" + COLLECTION_NAME);",
+    "  return { created: created, total: names.length, collection: COLLECTION_NAME };",
+    "})();"
+  ];
+  return lines.join("\n");
 }
 
 function updateCounts() {
@@ -577,14 +513,19 @@ function refresh() {
   const s = combos.filter((c) => exported.has(keyOf(c))).length;
   const t = combos.filter((c) => todo.has(keyOf(c))).length;
 
+  const exportedCombos = combos.filter((c) => exported.has(keyOf(c)));
+
   $("#summary").textContent = n + (n === 1 ? " combination" : " combinations")
     + " · " + s + " exported · " + t + " todo";
   $("#empty").hidden = combos.length > 0;
-  $("#md").value = toMarkdown(combos.filter((c) => exported.has(keyOf(c))));
+  $("#md").value = toMarkdown(exportedCombos);
+  $("#mcp").value = toMcpScript(exportedCombos);
   $("#copy-sel").disabled = s === 0;
   $("#copy-all").disabled = n === 0;
   $("#select-all").disabled = n === 0 || s === n;
   $("#clear").disabled = s === 0;
+  $("#copy-mcp-sel").disabled = s === 0;
+  $("#copy-mcp-all").disabled = n === 0;
 }
 
 $("#in-collection").addEventListener("input", refresh);
@@ -627,6 +568,7 @@ $("#reset").addEventListener("click", () => {
   hiddenPairs.clear();
   build();
   setStatus("Restored the example lists.");
+  setMcpStatus("");
 });
 
 $("#copy-sel").addEventListener("click", async () => {
@@ -639,6 +581,18 @@ $("#copy-all").addEventListener("click", async () => {
   const combos = allCombos();
   const ok = await copyText(toMarkdown(combos));
   setStatus(ok ? "Copied all " + combos.length + " combinations as Markdown." : "Copy blocked here. Select the preview text and copy it manually.");
+});
+
+$("#copy-mcp-sel").addEventListener("click", async () => {
+  const text = toMcpScript(allCombos().filter((c) => exported.has(keyOf(c))));
+  const ok = await copyText(text);
+  setMcpStatus(ok ? "Copied the figma_execute script." : "Copy blocked here. Select the script and copy it manually.");
+});
+
+$("#copy-mcp-all").addEventListener("click", async () => {
+  const combos = allCombos();
+  const ok = await copyText(toMcpScript(combos));
+  setMcpStatus(ok ? "Copied the figma_execute script for all " + combos.length + " combinations." : "Copy blocked here. Select the script and copy it manually.");
 });
 
 $("#in-heading").value = DEFAULTS.heading;

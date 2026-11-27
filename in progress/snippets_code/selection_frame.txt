@@ -1,0 +1,12 @@
+const frames = figma.currentPage.selection.filter(node => node.type === 'FRAME');
+
+if (frames.length === 0) {
+  figma.notify('No frames selected.');
+} else {
+  const frameNames = frames.map(f => f.name.trim()).join(', ');
+  const pageName = figma.currentPage.name.trim();
+  const formatted = `on frames ${frameNames} on ${pageName}`;
+
+  copy(formatted);
+  figma.notify(`Copied: ${formatted}`);
+}

@@ -1,18 +1,18 @@
 ---
 name: memory
-description: "Build or update a memory bank from a long conversation or document, or maintain one incrementally when requested. Use this skill to extract durable facts, entities, episodes, changes, and goals with a span-based workflow. For ongoing memory capture, check for updates every 2-3 user messages."
+description: "Build or update a memory bank from a long conversation or document, or maintain one incrementally when requested. Use this skill to extract durable facts, entities, episodes, changes, and goals with a span-based workflow. For ongoing memory capture, check for updates after every 3 user messages."
 ---
 
 # Build a memory bank
 
 Select extraction rules for each span instead of applying one summary prompt to the entire input.
 
-For ongoing memory capture, check the conversation after every 2-3 user messages and add any new durable information to the memory bank. Do not add an entry when there is no useful new information. This cadence applies while the skill is active; it does not trigger the skill in otherwise unrelated conversations.
+For ongoing memory capture, check the conversation after every 3 user messages and add any new durable information to the memory bank. Do not add an entry when there is no useful new information. This cadence applies while the skill is active; it does not trigger the skill in otherwise unrelated conversations.
 
 ## Rules
 
 | File | Use it to |
-|------|-----------|
+| --- | --- |
 | `memory/extract-facts.md` | Capture concrete, reusable facts |
 | `memory/track-entities.md` | Track people, places, and objects |
 | `memory/summarize-episode.md` | Compress a sequence of events |
@@ -35,7 +35,7 @@ For example, use `extract-facts.md` and `track-entities.md` for a person's job h
 
 Follow each selected rule's instructions. Write one or more entries in this format:
 
-```
+```text
 - [RULE_NAME] [span-id or turn] <memory content>
 ```
 

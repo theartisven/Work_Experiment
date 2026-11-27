@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,94 +6,8 @@
 <title>Typescale Generator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
-<style>
-:root{
-  --bg:#ffffff; --fg:#37352f; --muted:#787774; --line:#e9e9e7; --field:#f7f6f3; --accent:#2383e2;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){ --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --line:#2f2f2f; --field:#242424; --accent:#529cca; color-scheme:dark; }
-}
-:root[data-theme="dark"]{ --bg:#191919; --fg:#e6e6e4; --muted:#9b9a97; --line:#2f2f2f; --field:#242424; --accent:#529cca; color-scheme:dark; }
 
-body{
-  margin:0; background:var(--bg); color:var(--fg);
-  font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
-  padding-left:max(16px,env(safe-area-inset-left,0px));
-  padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:32px;
-}
-h1{font-size:22px; font-weight:600; margin:0 0 4px}
-.hint{font-size:12px; color:var(--muted); margin:0}
-.wrap{max-width:1200px; margin:24px auto 0; display:grid; grid-template-columns:280px minmax(0,1fr); gap:32px; align-items:start}
-@media (max-width:900px){
-  .wrap{grid-template-columns:minmax(0,1fr); gap:20px}
-  main{order:-1}
-  th,td{padding:8px 10px}
-}
-td:first-child:not(.group),th:first-child{position:sticky; left:0; z-index:1}
-td:first-child:not(.group){background:var(--bg)}
-.table-wrap{max-width:100%}
-@media (max-width:600px){
-  .table-wrap{overflow-x:visible}
-  thead{display:none}
-  table,tbody{display:block}
-  tbody tr{display:flex; flex-wrap:wrap; column-gap:14px; padding:10px 12px; border-bottom:1px solid var(--line)}
-  tbody tr:last-child{border-bottom:0}
-  tbody tr:has(td.group){padding:0}
-  tbody td{border:0; padding:0; font-size:12px; color:var(--muted); white-space:normal; min-width:0; max-width:100%}
-  td[data-l]:not([data-l=""])::before{content:attr(data-l) " "; opacity:.7}
-  td:first-child:not(.group){position:static; background:none; flex-basis:100%; font-size:13px; font-weight:600; color:var(--fg); padding-bottom:2px}
-  td.group{flex-basis:100%; padding:6px 12px}
-  td:last-child:not(.group){flex-basis:100%; padding-top:6px; color:var(--fg); overflow-x:auto}
-  td .preview{white-space:normal; overflow-wrap:anywhere}
-}
-
-.group{border-top:1px solid var(--line); padding-top:14px; margin-top:16px}
-.group:first-child{border-top:0; margin-top:0; padding-top:0}
-.group h2{font-size:12px; font-weight:600; color:var(--muted); margin:0 0 10px}
-.row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-.field{margin-bottom:10px; min-width:0}
-label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px}
-input[type=checkbox]{width:auto; margin-right:6px; vertical-align:-2px}
-label.check{display:flex; align-items:center; color:var(--fg); font-size:13px; margin:0}
-input,select{
-  width:100%; box-sizing:border-box; background:var(--field); color:var(--fg);
-  border:1px solid var(--line); border-radius:4px; padding:6px 8px; font:inherit;
-}
-input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
-
-main{min-width:0}
-.table-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px}
-table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
-th,td{text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap; font-size:13px}
-tr:last-child td{border-bottom:0}
-th{font-weight:500; color:var(--muted); background:var(--field)}
-td.base-row{font-weight:600}
-td:last-child{white-space:normal}
-.preview{white-space:normal; display:block; min-width:240px; overflow-wrap:anywhere}
-td.group{font-weight:600; color:var(--muted); background:var(--field)}
-.tabs{display:flex; gap:4px; margin-bottom:12px; border-bottom:1px solid var(--line)}
-.tabs button{border:0; border-bottom:2px solid transparent; border-radius:0; padding:6px 12px; margin-bottom:-1px; color:var(--muted)}
-.tabs button[aria-selected="true"]{color:var(--fg); border-bottom-color:var(--fg)}
-h2[data-toggle]{cursor:pointer; user-select:none}
-h2[data-toggle]::before{content:"\25BE\00a0"; color:var(--muted)}
-h2[data-toggle][aria-expanded="false"]::before{content:"\25B8\00a0"}
-h2[data-toggle]:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
-
-details{margin-top:16px}
-summary{cursor:pointer; user-select:none; font-size:14px; font-weight:600; padding:4px 0}
-summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
-.actions{display:flex; align-items:center; gap:12px; margin:16px 0 10px; flex-wrap:wrap}
-button{
-  background:none; color:var(--fg); border:1px solid var(--line); border-radius:4px;
-  padding:6px 12px; font:inherit; cursor:pointer;
-}
-button:hover{background:var(--field)}
-pre{
-  background:var(--field); border:1px solid var(--line); border-radius:6px;
-  padding:12px 14px; overflow-x:auto; font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin:0; color:var(--fg)
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <h1>Typescale</h1>
@@ -245,12 +159,13 @@ pre{
     <details id="cssBox">
     <summary>Export</summary>
     <div class="actions">
-      <select id="exportFmt" aria-label="Export format" style="width:auto">
+      <select id="exportFmt" aria-label="Export format" class="export-format">
         <option value="css-classes">CSS classes</option>
         <option value="css-vars">CSS variables</option>
-        <option value="md-table" selected>Markdown table (Figma, docs)</option>
+        <option value="md-table">Markdown table (Figma, docs)</option>
         <option value="figma-vars">Figma variables (plugin script)</option>
         <option value="figma-styles">Figma text styles (plugin script)</option>
+        <option value="figma-mcp" selected>Figma Console MCP (figma_execute)</option>
       </select>
       <button id="copy" type="button">Copy</button>
       <span id="status" class="hint" role="status"></span>
@@ -452,6 +367,50 @@ for (const t of tokens) {
   add(t.name + '/letter-spacing', 'FLOAT', t.letterSpacing);
 }
 figma.closePlugin('Created ' + tokens.length + ' typography tokens');`;
+  }
+
+  if (fmt === 'figma-mcp') {
+    const data = items.map(t => {
+      const o = {
+        name: t.token,
+        family: familyName(t.role),
+        styles: WEIGHT_STYLES[t.weight] || ['Regular'],
+        size: t.size,
+        lineHeight: round(t.lh * 100, 1),
+        letterSpacing: round(t.ls * 100, 2)
+      };
+      if (t.transform === 'uppercase') o.textCase = 'UPPER';
+      if (t.underline) o.textDecoration = 'UNDERLINE';
+      return o;
+    });
+    return `// Figma Console MCP \u2014 run with figma_execute
+// Creates one text style per token. Fonts must be available in Figma.
+const styles = ${JSON.stringify(data, null, 2)};
+
+async function loadFont(family, names) {
+  for (const style of names) {
+    try { await figma.loadFontAsync({ family, style }); return style; } catch (e) {}
+  }
+  throw new Error('Font not available: ' + family + ' ' + names[0]);
+}
+
+(async () => {
+  const created = [];
+  for (const s of styles) {
+    const style = await loadFont(s.family, s.styles);
+    const t = figma.createTextStyle();
+    t.name = s.name;
+    t.fontName = { family: s.family, style };
+    t.fontSize = s.size;
+    t.lineHeight = { unit: 'PERCENT', value: s.lineHeight };
+    t.letterSpacing = { unit: 'PERCENT', value: s.letterSpacing };
+    if (s.textCase) t.textCase = s.textCase;
+    if (s.textDecoration) t.textDecoration = s.textDecoration;
+    created.push(s.name);
+  }
+  figma.notify('Created ' + created.length + ' text styles');
+  return { created: created.length, styles: created };
+})();`;
   }
 
   const data = items.map(t => {

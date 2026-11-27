@@ -4,7 +4,12 @@ description: Defines project-wide variables for Figma UI generation, including t
 original-author: sven hero kaufmann
 contributor:
   - theodore galve
-version: 1.7
+version: 1.8
+---
+
+### DEFAULT_PAGE
+DEFAULT_PAGE: 🏀 Playground [General]
+
 ---
 
 ### DESKTOP_RULE
@@ -14,6 +19,7 @@ DESKTOP_RULE: 1440
 
 ### TABLET_RULE
 TABLET_RULE: 768
+
 ---
 
 ### MOBILE_RULE

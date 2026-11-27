@@ -1,0 +1,453 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>HTML Compare</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+
+
+<link rel="stylesheet" href="style.css">
+
+<div class="header">
+  <h1>Compare</h1>
+  <p class="sub">Load two files (image or html) and drag to compare them side by side</p>
+</div>
+
+<div class="imports">
+  <label class="icard" id="card-b">
+    <input type="file" id="in-b" accept=".html,.htm,image/*">
+    <span class="pill">Before</span>
+    <svg class="uicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+    </svg>
+    <span class="fname" id="nm-b">Choose file…</span>
+  </label>
+  <label class="icard" id="card-a">
+    <input type="file" id="in-a" accept=".html,.htm,image/*">
+    <span class="pill">After</span>
+    <svg class="uicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+    </svg>
+    <span class="fname" id="nm-a">Choose file…</span>
+  </label>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="seg" id="seg">
+      <button class="seg-btn active" data-w="full">Full</button>
+      <button class="seg-btn" data-w="50">50%</button>
+      <button class="seg-btn" data-w="25">25%</button>
+      <button class="seg-btn" data-w="free">Free</button>
+    </div>
+    <button class="lock-btn" id="lock-btn" title="Toggle page interaction">
+      <svg id="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+      <span id="lock-label">Locked</span>
+    </button>
+  </div>
+  <div class="toolbar-right">
+    <div class="zoom-row" id="zoom-row" hidden>
+      <button id="btn-out">−</button>
+      <span class="zoom-label" id="zoom-label">100%</span>
+      <button id="btn-in">+</button>
+      <button id="btn-reset">Reset view</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap">
+  <div class="stage" id="stage">
+    <div class="pane" id="pane-b">
+      <div class="vp" id="vp-b">
+        <div class="frame-wrap">
+          <iframe id="frame-b" sandbox="allow-scripts allow-forms" title="Before"></iframe>
+          <img id="img-b" class="media" alt="Before" hidden>
+        </div>
+      </div>
+    </div>
+    <div class="pane" id="pane-a">
+      <div class="vp" id="vp-a">
+        <div class="frame-wrap">
+          <iframe id="frame-a" sandbox="allow-scripts allow-forms" title="After"></iframe>
+          <img id="img-a" class="media" alt="After" hidden>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="hitzone" id="hitzone"></div>
+
+    <div class="line" id="line" hidden></div>
+    <div class="knob" id="knob" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l-6-6 6-6M15 6l6 6-6 6"/>
+      </svg>
+    </div>
+    <span class="badge badge-b" id="badge-b" hidden>Before</span>
+    <span class="badge badge-a" id="badge-a" hidden>After</span>
+    <div class="interact-ribbon" id="ribbon" hidden>● Interactive · scroll &amp; click synced</div>
+
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        <line x1="12" y1="2" x2="12" y2="22" stroke-dasharray="2 3"/>
+      </svg>
+      <p>Load both files above to begin</p>
+    </div>
+  </div>
+
+  <div class="status-row" id="status-row" hidden>
+    <p class="hint" id="hint">Drag anywhere to compare</p>
+    <p class="note">Relative assets may not load · sandboxed iframe</p>
+  </div>
+</div>
+
+<script>
+  /* ── DOM refs ── */
+  const stage     = document.getElementById('stage');
+  const overlay   = document.getElementById('overlay');
+  const hitzone   = document.getElementById('hitzone');
+  const paneB     = document.getElementById('pane-b');
+  const paneA     = document.getElementById('pane-a');
+  const vpB       = document.getElementById('vp-b');
+  const vpA       = document.getElementById('vp-a');
+  const frameB    = document.getElementById('frame-b');
+  const frameA    = document.getElementById('frame-a');
+  const imgB      = document.getElementById('img-b');
+  const imgA      = document.getElementById('img-a');
+  const kinds     = { b: 'html', a: 'html' };   // 'html' | 'img'
+  const line      = document.getElementById('line');
+  const knob      = document.getElementById('knob');
+  const badgeB    = document.getElementById('badge-b');
+  const badgeA    = document.getElementById('badge-a');
+  const ribbon    = document.getElementById('ribbon');
+  const empty     = document.getElementById('empty');
+  const wrap      = document.getElementById('wrap');
+  const seg       = document.getElementById('seg');
+  const zoomRow   = document.getElementById('zoom-row');
+  const zoomLbl   = document.getElementById('zoom-label');
+  const statusRow = document.getElementById('status-row');
+  const hintEl    = document.getElementById('hint');
+  const lockBtn   = document.getElementById('lock-btn');
+  const lockIcon  = document.getElementById('lock-icon');
+  const lockLabel = document.getElementById('lock-label');
+  const inB       = document.getElementById('in-b');
+  const inA       = document.getElementById('in-a');
+  const cardB     = document.getElementById('card-b');
+  const cardA     = document.getElementById('card-a');
+  const nmB       = document.getElementById('nm-b');
+  const nmA       = document.getElementById('nm-a');
+
+  /* ── State ── */
+  let sliderPos = 50;
+  let loadedB   = false;
+  let loadedA   = false;
+  let mode      = 'full';
+  let locked    = true;
+  let zoom      = 1;
+  let panX      = 0;
+  let panY      = 0;
+  let dragType  = null;
+  let lastX = 0, lastY = 0;
+
+  const FW = 1280, FH = 720;
+
+  const LOCK_ICON   = `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>`;
+  const UNLOCK_ICON = `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/>`;
+
+  /* ── Sync bridge injected into loaded HTML files ──
+     Split the closing script tag so the HTML parser doesn't end THIS script block. */
+  const SYNC_JS = [
+    '(function(){',
+    '  var sy=false;',
+    '  window.addEventListener("message",function(e){',
+    '    if(!e.data)return;',
+    '    if(e.data.type==="hc-scroll"){',
+    '      sy=true;window.scrollTo(e.data.x,e.data.y);',
+    '      requestAnimationFrame(function(){sy=false;});',
+    '    }',
+    '    if(e.data.type==="hc-sdelta"){window.scrollBy(e.data.dx,e.data.dy);}',
+    '    if(e.data.type==="hc-click"){',
+    '      sy=true;',
+    '      var w=document.documentElement.clientWidth,h=document.documentElement.clientHeight;',
+    '      var el=document.elementFromPoint(e.data.rx*w,e.data.ry*h);',
+    '      if(el)el.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true,',
+    '        clientX:e.data.rx*w,clientY:e.data.ry*h}));',
+    '      requestAnimationFrame(function(){sy=false;});',
+    '    }',
+    '  });',
+    '  window.addEventListener("scroll",function(){',
+    '    if(!sy)window.parent.postMessage({type:"hc-scroll",x:window.scrollX,y:window.scrollY},"*");',
+    '  },{passive:true});',
+    '  document.addEventListener("click",function(e){',
+    '    if(!sy)window.parent.postMessage({type:"hc-click",',
+    '      rx:e.clientX/document.documentElement.clientWidth,',
+    '      ry:e.clientY/document.documentElement.clientHeight},"*");',
+    '  },{passive:true});',
+    '})();'
+  ].join('');
+  const SYNC_TAG = '<scr' + 'ipt>' + SYNC_JS + '</scr' + 'ipt>';
+
+  function injectSync(html) {
+    return /(<\/body)/i.test(html)
+      ? html.replace(/(<\/body)/i, SYNC_TAG + '$1')
+      : html + SYNC_TAG;
+  }
+
+  /* ── Frame scaling ── */
+  function scaleFrames() {
+    const sw = stage.clientWidth, sh = stage.clientHeight;
+    const s  = Math.min(sw / FW, sh / FH);
+    [frameB, frameA, imgB, imgA].forEach(f => {
+      f.style.width     = FW + 'px';
+      f.style.height    = FH + 'px';
+      f.style.transform = `scale(${s})`;
+    });
+  }
+  new ResizeObserver(scaleFrames).observe(stage);
+  scaleFrames();
+
+  /* ── Helpers ── */
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function clientXY(e) {
+    if (e.touches && e.touches.length)
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  }
+  function postTo(frame, msg) {
+    try { if (frame.contentWindow) frame.contentWindow.postMessage(msg, '*'); } catch(_) {}
+  }
+
+  /* ── Cross-frame sync: relay scroll & click from one side to the other ── */
+  window.addEventListener('message', e => {
+    if (!e.data || typeof e.data.type !== 'string') return;
+    const t = e.data.type;
+    if (t !== 'hc-scroll' && t !== 'hc-click') return;
+    // Forward to whichever frame did NOT send this
+    [frameB, frameA].forEach(f => {
+      if (f.contentWindow && f.contentWindow !== e.source) postTo(f, e.data);
+    });
+  });
+
+  /* ── Slider ── */
+  function setSlider(pct) {
+    sliderPos = clamp(pct, 1, 99);
+    paneB.style.clipPath = `inset(0 ${100 - sliderPos}% 0 0)`;
+    paneA.style.clipPath = `inset(0 0 0 ${sliderPos}%)`;
+    line.style.left    = sliderPos + '%';
+    knob.style.left    = sliderPos + '%';
+    hitzone.style.left = sliderPos + '%';
+  }
+
+  function toPct(clientX) {
+    const r = stage.getBoundingClientRect();
+    return ((clientX - r.left) / r.width) * 100;
+  }
+
+  function nearLine(clientX) {
+    const r = stage.getBoundingClientRect();
+    return Math.abs(clientX - (r.left + (sliderPos / 100) * r.width)) < 22;
+  }
+
+  /* ── Pan / zoom ── */
+  function applyTransform() {
+    const t = `translate(${panX}px,${panY}px) scale(${zoom})`;
+    vpB.style.transform = t;
+    vpA.style.transform = t;
+    zoomLbl.textContent = Math.round(zoom * 100) + '%';
+  }
+
+  function zoomAt(factor, fx, fy) {
+    const nz = clamp(zoom * factor, 0.15, 10);
+    panX = fx - (fx - panX) * (nz / zoom);
+    panY = fy - (fy - panY) * (nz / zoom);
+    zoom = nz;
+    applyTransform();
+  }
+
+  function resetView() {
+    zoom = 1; panX = 0; panY = 0;
+    vpB.style.transform = '';
+    vpA.style.transform = '';
+    zoomLbl.textContent = '100%';
+  }
+
+  /* ── Pointer behavior ── */
+  function applyPointers() {
+    const overlayOn = locked || mode === 'free';
+    // Only HTML sides take interaction; images stay passive
+    const htmlB = kinds.b === 'html', htmlA = kinds.a === 'html';
+    overlay.style.pointerEvents = overlayOn  ? 'auto' : 'none';
+    hitzone.style.pointerEvents = !overlayOn ? 'auto' : 'none';
+    frameB.style.pointerEvents  = (overlayOn || !htmlB) ? 'none' : 'auto';
+    frameA.style.pointerEvents  = (overlayOn || !htmlA) ? 'none' : 'auto';
+    stage.classList.toggle('free-pan',    mode === 'free' && locked);
+    stage.classList.toggle('interactive', !locked && mode !== 'free');
+  }
+
+  /* ── Size mode ── */
+  function setMode(m) {
+    mode = m;
+    seg.querySelectorAll('.seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.w === m));
+    wrap.className = 'wrap' + (m === '50' ? ' w-50' : m === '25' ? ' w-25' : '');
+    zoomRow.hidden = m !== 'free';
+    if (m !== 'free') resetView();
+    applyPointers();
+    updateHint();
+  }
+
+  /* ── Lock ── */
+  function setLocked(val) {
+    locked = val;
+    lockBtn.classList.toggle('interactive', !locked);
+    lockIcon.innerHTML = locked ? LOCK_ICON : UNLOCK_ICON;
+    lockLabel.textContent = locked ? 'Locked' : 'Interactive';
+    ribbon.hidden = locked;
+    applyPointers();
+    updateHint();
+  }
+
+  lockBtn.addEventListener('click', () => setLocked(!locked));
+
+  /* ── Hint ── */
+  function updateHint() {
+    if (!loadedB || !loadedA) return;
+    if (!locked && mode !== 'free') {
+      hintEl.textContent = 'Pages interactive · scroll & clicks sync between sides · drag divider line to compare';
+    } else if (mode === 'free') {
+      hintEl.textContent = 'Scroll to zoom · drag divider or elsewhere to pan';
+    } else {
+      hintEl.textContent = 'Drag anywhere to compare · scroll wheel syncs both pages';
+    }
+  }
+
+  /* ── Activate ── */
+  function tryActivate() {
+    if (!loadedB || !loadedA) return;
+    empty.hidden     = true;
+    line.hidden      = false;
+    knob.hidden      = false;
+    badgeB.hidden    = false;
+    badgeA.hidden    = false;
+    statusRow.hidden = false;
+    ribbon.hidden    = locked;
+    setSlider(sliderPos);
+    applyPointers();
+    updateHint();
+  }
+
+  /* ── File inputs — read as text, inject sync bridge, create blob ── */
+  function wire(input, frame, nameEl, card, badge, side) {
+    input.addEventListener('change', async e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const img = side === 'b' ? imgB : imgA;
+      if (frame._blobUrl) URL.revokeObjectURL(frame._blobUrl);
+      if (img._blobUrl)   URL.revokeObjectURL(img._blobUrl);
+      if (f.type.startsWith('image/')) {
+        // Image side: static, no sync, iframe parked
+        img._blobUrl = URL.createObjectURL(f);
+        img.src = img._blobUrl;
+        img.hidden = false;
+        frame.src = 'about:blank';
+        frame.hidden = true;
+        kinds[side] = 'img';
+      } else {
+        // HTML side: inject sync bridge and load as interactive iframe
+        let html = '';
+        try { html = await f.text(); } catch(_) {}
+        frame._blobUrl = URL.createObjectURL(new Blob([injectSync(html)], { type: 'text/html' }));
+        frame.src = frame._blobUrl;
+        frame.hidden = false;
+        img.hidden = true;
+        img.removeAttribute('src');
+        kinds[side] = 'html';
+      }
+      applyPointers();
+      card.classList.add('loaded');
+      nameEl.textContent = f.name.length > 26 ? f.name.slice(0, 24) + '…' : f.name;
+      badge.textContent  = f.name.length > 18 ? f.name.slice(0, 16) + '…' : f.name;
+      if (side === 'b') loadedB = true; else loadedA = true;
+      tryActivate();
+    });
+  }
+
+  wire(inB, frameB, nmB, cardB, badgeB, 'b');
+  wire(inA, frameA, nmA, cardA, badgeA, 'a');
+
+  /* ── Toolbar ── */
+  seg.addEventListener('click', e => {
+    const btn = e.target.closest('.seg-btn');
+    if (btn) setMode(btn.dataset.w);
+  });
+  document.getElementById('btn-in')   .addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(1.25, r.width/2, r.height/2); });
+  document.getElementById('btn-out')  .addEventListener('click', () => { const r = stage.getBoundingClientRect(); zoomAt(0.80, r.width/2, r.height/2); });
+  document.getElementById('btn-reset').addEventListener('click', resetView);
+
+  /* ── Overlay wheel: zoom (free) or scroll-sync (locked fixed modes) ── */
+  overlay.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (mode === 'free') {
+      const r = stage.getBoundingClientRect();
+      zoomAt(e.deltaY < 0 ? 1.08 : 0.93, e.clientX - r.left, e.clientY - r.top);
+    } else {
+      /* Scroll both iframes together via postMessage */
+      const msg = { type: 'hc-sdelta', dx: e.deltaX, dy: e.deltaY };
+      postTo(frameB, msg);
+      postTo(frameA, msg);
+    }
+  }, { passive: false });
+
+  /* ── Drag (overlay = locked/free, hitzone = interactive slider) ── */
+  function startDrag(e, fromHitzone) {
+    const { x, y } = clientXY(e);
+    lastX = x; lastY = y;
+    if (fromHitzone || mode !== 'free') {
+      dragType = 'slider';
+      setSlider(toPct(x));
+    } else {
+      dragType = nearLine(x) ? 'slider' : 'pan';
+      if (dragType === 'pan') stage.classList.add('panning');
+    }
+    if (e.cancelable) e.preventDefault();
+  }
+
+  overlay.addEventListener('mousedown',  e => startDrag(e, false));
+  overlay.addEventListener('touchstart', e => startDrag(e, false), { passive: true });
+  hitzone.addEventListener('mousedown',  e => startDrag(e, true));
+  hitzone.addEventListener('touchstart', e => startDrag(e, true), { passive: true });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragType) return;
+    const { x, y } = clientXY(e);
+    if (dragType === 'slider') { setSlider(toPct(x)); }
+    else { panX += x - lastX; panY += y - lastY; applyTransform(); }
+    lastX = x; lastY = y;
+  });
+
+  window.addEventListener('mouseup', () => { dragType = null; stage.classList.remove('panning'); });
+
+  window.addEventListener('touchmove', e => {
+    if (!dragType) return;
+    const { x, y } = clientXY(e);
+    if (dragType === 'slider') { setSlider(toPct(x)); }
+    else { panX += x - lastX; panY += y - lastY; applyTransform(); }
+    lastX = x; lastY = y;
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => { dragType = null; });
+
+  /* ── Init ── */
+  setLocked(true);
+  setSlider(50);
+</script>
+
+</body></html>
